@@ -1,0 +1,4783 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<title>舆情监测专项报告plus</title>
+<meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
+<link href="https://www.miaojian.com/mjcss/specialreport/bootstrap.min_zxbg.css?v=3" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css?v=3">
+<!-- 引入 jQuery --> 
+<script src="https://www.miaojian.com/Scripts/jquery-3.5.1.min.js"></script> 
+<script src="https://www.miaojian.com/Scripts/echarts.min_zxbg.js"></script> 
+<script src="https://www.miaojian.com/Scripts/echarts-wordcloud.min_zxbg.js"></script>
+<style>
+body {
+	background: linear-gradient(to bottom, #F48014 0%, #F48014 5%, #F5A623 10%, #E9ECEF 30%);
+	/* background-color: #E7E7E7; 背景底色 
+	background-image: url("https://www.miaojian.com/mjimages/specialreport/topbg.png");
+	background-repeat: no-repeat;
+	background-position: top center;
+	background-size: 100% 160px;*/
+	padding-top: 20px; /* 避免内容覆盖在背景图上 */
+	font-family: "Microsoft YaHei", sans-serif;
+}
+/* 新增导航条样式 */
+.nav-scroller {
+	position: fixed;
+	top: -50px;
+	left: 50%; /* 新增 */
+	transform: translateX(-50%); /* 新增 */
+	right: auto; /* 移除原有right:0 */
+	z-index: 1030;
+	background: white;
+	box-shadow: 0 2px 4px rgba(0,0,0,.1);
+	transition: top 0.3s;
+	overflow-x: auto;
+	width: max-content; /* 新增 */
+	max-width: 90%; /* 新增 */
+	border-radius: 30px; /* 可选圆角 */
+}
+
+/* 移动端保持原有样式 */
+@media (max-width: 991.98px) {
+.nav-scroller {
+	left: 0;
+	right: 0;
+	width: 100%;
+	max-width: 100%;
+	border-radius: 30px;
+	transform: none;
+}
+}
+.nav-scroller.active {
+	top: 0;
+}
+.nav-scroller .nav {
+	flex-wrap: nowrap;
+	padding: 10px 15px;
+	white-space: nowrap;
+}
+.nav-scroller .nav-link {
+	color: #666;
+	font-size: 14px;
+	padding: 8px 15px;
+	border-radius: 20px;
+	transition: all 0.3s;
+}
+.nav-scroller .nav-link.active, .nav-scroller .nav-link:hover {
+	background: #f5a623;
+	color: white;
+}
+
+/* 隐藏横向滚动条 */
+.nav-scroller::-webkit-scrollbar {
+display: none;
+}
+.font-white {
+	color: #ffffff;
+}
+.logo-wrapper {
+	margin-bottom: 10px;
+}
+.badge {
+	font-size: 80%;
+	font-weight: 550;
+}
+.logo-img {
+	height: 36px;
+	width: auto;
+	max-width: 100%;
+	display: block;
+}
+.container-box {
+	background-color: #ffffff;
+	border-radius: 10px;
+	margin: 10px auto 30px auto;
+	padding: 12px;
+	max-width: 768px;
+}
+.title {
+	font-size: 24px;
+	font-weight: bold;
+	color: #000;
+}
+.date-range {
+	font-size: 14px;
+	color: #444;
+	border-bottom: 1px solid #ddd;
+	padding-bottom: 10px;
+	margin-top: 10px;
+	margin-bottom: 20px;
+}
+.date-range-2 {
+	font-size: 14px;
+	color: #444;
+	border-top: 1px solid #ddd;
+	padding-top: 10px;
+	margin-top: 40px;
+	margin-bottom: 20px;
+}
+.section-title {
+	font-weight: bold;
+	font-size: 18px;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+.desc-box {
+	background-color: #f4f4f4;
+	border-radius: 6px;
+	padding: 15px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: #333;
+}
+.desc-box-2 {
+	font-size: 14px;
+	line-height: 1.6;
+	color: #333;
+}
+.data-area {
+	display: flex;
+	flex-wrap: nowrap;
+	border-radius: 8px;
+	overflow: hidden;
+}
+.hot-index {
+	/*background: linear-gradient(135deg, #f59a23, #f59a23);*/
+	background: url("https://www.miaojian.com/mjimages/specialreport/jishu.png") no-repeat;
+	background-size: cover;
+	color: #fff;
+	flex: 0 0 40%;
+	max-width: 40%;
+	padding: 5px 10px;
+	text-align: left;
+	border-top-left-radius: 6px;
+	border-bottom-left-radius: 6px;
+}
+.hot-index .value {
+	font-size: 28px;
+	font-weight: bold;
+}
+.hot-index small {
+	font-size: 12px;
+}
+.metrics {
+	flex: 0 0 60%;
+	max-width: 60%;
+	background: #f4f4f4;
+	padding: 10px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-around;
+	border-top-right-radius: 6px;
+	border-bottom-right-radius: 6px;
+}
+.metric-item {
+	flex: 0 0 44%;
+	max-width: 44%;
+	font-size: 14px;
+	color: #333;
+	/*margin-bottom: 10px;*/
+	padding: 2px;
+	text-align: left;
+	border-bottom: 1px dashed #DAE1E9;
+	border-right: 1px dashed #DAE1E9;
+}
+.metric-item:nth-child(2), .metric-item:nth-child(4) {
+	flex: 0 0 56%;
+	max-width: 56%;
+	border-right: none;
+}
+.metric-item:nth-child(3), .metric-item:nth-child(4) {
+	border-bottom: none;
+}
+.metric-title {
+	font-weight: 550;
+	color: #666666;
+}
+.download-btn {
+	background-color: #f5a623;
+	color: #fff;
+	border: none;
+	font-size: 16px;
+	font-weight: bold;
+	padding: 12px;
+	width: 100%;
+	border-radius: 6px;
+	margin-top: 30px;
+}
+.trend-chart {
+	height: 300px;
+	width: 100%;
+}
+.trend-btn-group .btn {
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 550;
+	margin-right: 10px;
+	background-color: #ffffff;
+	color: #333;
+	border: 1px solid #ddd;
+}
+.trend-btn-group .btn:last-child {
+	margin-right: 0;
+}
+.trend-btn-group .btn.active {
+	background-color: #F6AB00 !important;
+	color: #ffffff !important;
+	border-color: #F6AB00 !important;
+}
+.new-info-list .info-card {
+	display: flex;
+	border-left: 3px solid #f5a623;
+	background-color: #fff4ec;
+	padding: 10px;
+	margin-bottom: 12px;
+	border-radius: 6px;
+	text-decoration: none;
+	color: #000;
+	transition: background-color 0.2s;
+}
+.new-info-list .info-card:hover {
+	background-color: #fff0e0;
+}
+.new-info-list .info-index {
+	font-weight: bold;
+	margin-right: 10px;
+	color: #000;
+}
+.new-info-list .info-content {
+	font-size: 14px;
+	line-height: 1.5;
+}
+#opinionContent span.label {
+	display: inline-block;
+	background-color: #f5a623;
+	color: #fff;
+	font-size: 14px;
+	padding: 4px 10px;
+	border-radius: 16px;
+	margin: 0 6px 8px 0;
+}
+
+@media (max-width: 575.98px) {
+body {
+	background: linear-gradient(to bottom, #F48014 0%, #F48014 5%, #F5A623 10%, #E9ECEF 30%);
+	/* background-color: #E7E7E7; 背景底色 
+	background-image: url("https://www.miaojian.com/mjimages/specialreport/topbg.png");
+	background-repeat: no-repeat;
+	background-position: top center;
+	background-size: 100% 175px;*/
+	background-attachment: scroll;
+	padding-top: 20px; /* 避免内容覆盖在背景图上 */
+}
+.container-box {
+	margin-left: 15px;
+	margin-right: 15px;
+	margin-top: 10px;
+	width: auto;
+	max-width: calc(100% - 30px);
+	box-sizing: border-box;
+}
+.hot-index .value {
+	margin-top: 10px;
+	font-size: 24px;
+}
+.metrics {
+	padding: 5px;
+}
+.metric-item {
+	font-size: 12px;
+}
+.metric-title {
+	font-size: 12px;
+}
+.trend-btn-group .btn {
+	font-size: 14px;
+	padding: 6px;
+}
+}
+.tab-pane img {
+	margin-right: 3px;
+}
+
+/* 图表说明文字样式 */
+.chart-tip {
+	font-size: 11px;  /* 移动端缩小字号 */
+	padding: 5px 8px !important;
+	margin-top: 4px !important;
+}
+}
+/* 图表说明文字样式 */
+.chart-tip {
+	padding: 5px 10px;
+	line-height: 1.5;
+	opacity: 0.8;
+	border-radius: 6px;
+	border: 1px solid rgba(227, 213, 202, 0.90);
+	background: rgba(245, 235, 224, 0.36);
+	font-size: 12px;
+}
+/* 舆论观点模块样式 */
+.opinion-card {
+	background: #fff;
+	border-radius: 8px;
+	box-shadow: 0 0px 8px rgba(0,0,0,0.1);
+	padding: 12px;
+	transition: all 0.2s;
+}
+.opinion-header {
+	cursor: pointer;
+	padding: 8px;
+	border-radius: 6px;
+}
+.quote-box {
+	background: #fff8f0;
+	border-left: 3px solid #f5a623;
+	padding: 12px;
+	border-radius: 4px;
+	margin: 12px 0;
+}
+.progress {
+	background-color: #f0f0f0;
+}
+.badge-light {
+	background: #f8f9fa;
+	color: #666;
+	font-weight: 500;
+	padding: 4px 8px;
+	margin-right: 8px;
+}
+
+@media (max-width: 576px) {
+.opinion-card {
+	padding: 5px 10px;
+}
+.quote-box div {
+	font-size: 13px;
+}
+}
+.desc-box-3 {
+	background-color: #f4f4f4;
+	border-radius: 6px;
+	padding: 10px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: #333;
+}
+.font-14 {
+	font-size: 14px;
+}
+/* 舆论观点展开新增样式 */
+.main-category-list .main-category-card:nth-child(n+4) {
+	display: none;
+}
+.main-category-list.expanded .main-category-card {
+	display: block !important;
+}
+.category-expand-btn {
+	background: #f8f9fa;
+	border: 1px solid #ddd;
+	color: #666;
+	font-size: 14px;
+	padding: 6px 20px;
+	border-radius: 6px;
+	transition: all 0.3s;
+}
+.category-expand-btn:hover {
+	background: #f1f1f1;
+}
+
+@media (max-width: 576px) {
+.category-expand-btn {
+	width: 100%;
+}
+}
+/*返回顶部按钮*/	
+/* 基础样式 */
+.back-to-top {
+	position: fixed;
+	bottom: 30px;
+	right: calc(50% - 469px);
+	/*right: 60px; */
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: #f5a623;
+	color: white;
+	border: none;
+	cursor: pointer;
+	opacity: 0;
+	transform: translateY(20px);
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 12px rgba(245,166,35,0.25);
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+/* 显示状态 */
+.back-to-top.show {
+	opacity: 1;
+	transform: translateY(0);
+}
+/* 悬停效果 */
+.back-to-top:hover {
+	background: #e8931b;
+	box-shadow: 0 6px 16px rgba(245,166,35,0.35);
+	transform: translateY(-1px);
+}
+
+/* 移动端适配 */
+@media (max-width: 767.98px) {
+.back-to-top {
+	bottom: 15px;
+	right: 10px;
+	width: 40px;
+	height: 40px;
+}
+}
+
+	/* 时间轴样式 */
+.timeline-container {
+  position: relative;
+  padding: 0 15px;
+  margin-bottom: 30px;
+}
+
+.timeline {
+  position: relative;
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  border-left: 2px dashed #f5a623; /* ✅ 设置为虚线 */
+  left: 12%;
+  margin-left: -1px;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+  display: flex;
+}
+
+.timeline-date {
+  flex: 0 0 12%;
+  max-width: 12%;
+  padding-right: 15px;
+  text-align: right;
+  font-weight: bold;
+  color: #f5a623;
+  font-size: 16px;
+}
+
+.timeline-content {
+  flex: 0 0 88%;
+  max-width: 88%;
+  padding-left: 15px;
+  position: relative;
+}
+/* 0609新增时间轴样式*/	
+	@media (min-width: 769px) {
+  .timeline-date {
+    display: block !important;
+    text-align: left;
+    padding-bottom: 5px;
+  }
+  .timeline-date > div:first-child {
+    margin-bottom: 4px;
+    font-weight: bold;
+    color: #f5a623;
+    font-size: 16px;
+  }
+  .timeline-date .platform-tags, .timeline-date .platform-tags span {
+    margin-left: 0 !important;
+  }
+		.timeline-date .platform-tags span {
+			line-height: 1.4; /* 优化行高 */
+    white-space: normal; /* 允许文本换行 */
+			 min-width: 60px; /* 最小宽度确保可读性 */
+    transition: all 0.2s ease;
+		}
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -10px;
+  top: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #f5a623;
+  z-index: 1;
+}
+
+.timeline-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.timeline-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border-left: 3px solid #f5a623;
+}
+
+.timeline-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.timeline-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #666;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .timeline::before {
+    left: 30px;
+  }
+  
+  .timeline-item {
+    flex-direction: column;
+  }
+  
+  .timeline-date {
+    flex: 0 0 100%;
+    max-width: 100%;
+    text-align: left;
+    padding-right: 0;
+    margin-bottom: 10px;
+    padding-left: 45px;
+  }
+  
+  .timeline-content {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding-left: 45px;
+  }
+  
+  .timeline-dot {
+    left: 25px;
+  }
+}
+
+@media (max-width: 576px) {
+  .timeline::before {
+    left: 10px;
+  }
+  
+  .timeline-date {
+    padding-left: 35px;
+    font-size: 15px;
+  }
+  
+  .timeline-content {
+    padding-left: 35px;
+  }
+  
+  .timeline-dot {
+    left: 0px;
+	top:-30px;
+  }
+  
+  .timeline-title {
+    font-size: 15px;
+  }
+  
+  .timeline-desc {
+    font-size: 13px;
+  }
+}
+
+	/*二级小标题样式*/
+	.sub-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000000;
+    border-left: 4px solid #F5A623;
+    padding-left: 10px;
+    margin-top: 20px;
+    margin-bottom: 12px;
+}
+	/*高热信息列表箭头*/
+	.hot-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  background: rgba(245, 166, 35, 0.9);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.hot-arrow-left {
+  left: 4px;
+}
+
+.hot-arrow-right {
+  right: 4px;
+}
+
+.hot-arrow:hover {
+  background: #e8931b;
+}
+	
+	
+/* 高热信息序号 */
+.info-index {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #f5a623;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  line-height: 26px;
+  margin-right: 10px;
+  font-size: 14px;
+}
+	
+	
+/* 舆情趋势添加序号 */
+.highlight-point {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #ff0000;
+    border: 2px solid white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.highlight-line {
+    position: absolute;
+    height: 1px;
+    background-color: rgba(255,0,0,0.3);
+    z-index: 99;
+}	
+	
+	
+	
+/*弹出狂列表*/
+	#newsList .list-group-item:nth-child(odd) {
+  background-color: #ffffff; /* 奇数行白色 */
+}
+#newsList .list-group-item:nth-child(even) {
+  background-color: #F3F3F3; /* 偶数行浅灰色 */
+}
+#newsList .list-group-item:hover {
+  background-color: #e9ecef; /* 悬停时使用稍深的灰色 */
+}
+	
+</style>
+	
+	
+<!--历史按钮-->
+<style>
+/* ——按钮组——（如已存在可忽略） */
+.history-btn-group .btn{
+  border-radius:6px;font-size:14px;font-weight:550;margin-right:10px;
+  background:#fff;color:#333;border:1px solid #ddd;
+}
+.history-btn-group .btn:last-child{margin-right:0;}
+.history-btn-group .btn.active{
+  background:#F6AB00!important;color:#fff!important;border-color:#F6AB00!important;
+}
+
+/* ——列表卡片整体—— */
+.history-list .history-card{
+  background:#fffdf9;border-left:4px solid #F6AB00;border-radius:6px;
+  padding:12px 14px;margin-bottom:14px;
+}
+
+/* 序号圆点 */
+.history-index{
+  flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#F6AB00;
+  color:#fff;font-weight:bold;text-align:center;line-height:26px;font-size:14px;margin-right:10px;
+}
+
+/* 标题、子类、时间 */
+.history-title{font-size:14px;line-height:1.45;font-weight:600;color:#000;}
+.history-sub  {font-size:13px;color:#8A8F99;margin-top:4px;}
+.history-time {font-size:13px;color:#8A8F99;margin-top:4px;text-align:right;}
+
+/* ——右侧指数块：两行、右对齐—— */
+.history-right{
+  min-width:70px;               /* 预留宽度，防止标题挤压 */
+  text-align:right;
+}
+.history-right .tag   {font-size:13px;color:#8A8F99;line-height:1;}
+.history-right .score {font-size:18px;color:#F6AB00;font-weight:700;line-height:1;margin-top:2px;}
+
+/* ——移动端微调—— */
+@media (max-width:575.98px){
+  .history-card{padding:10px 12px;}
+  .history-title{font-size:13px;}
+  .history-right .score{font-size:16px;}
+}
+</style>
+	<!-- =========  舆情数据（替换此段）  ========= -->
+	<style>
+/* 结构与色彩保持 report_28 风格 */
+.spread-flex-container{display:flex;flex-wrap:wrap;gap:12px;}
+.gauge-wrapper{flex:1 1 45%;background:linear-gradient(135deg,#F6AB00,#F48014);border-radius:10px;padding:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:240px;}
+.gauge-box{width:100%;height:120px;}
+.metrics-grid{flex:1 1 50%;display:flex;flex-wrap:wrap;gap:10px;min-width:240px;}
+.metric-box{flex:1 1 calc(50% - 5px);background:#F4F4F4;border-radius:6px;padding:10px;text-align:center;}
+.metric-title{font-size:14px;color:#666;}
+.metric-value{font-size:20px;font-weight:bold;}
+.metric-value span{font-size:14px;font-weight:normal;margin-left:2px;}
+/* 排名信息 */
+.ranking-container{background:#fff;border:1px solid #DAE1E9;border-radius:10px;padding:10px 10px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.ranking-item{min-width:33.33%;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ranking-item:not(:first-child){border-left:1px solid #E8EBF0;}
+.ranking-number{font-size:28px;font-weight:700;color:#F6AB00;line-height:1;margin-bottom:4px;}
+.ranking-desc{font-size:14px;font-weight:600;color:#000;line-height:1.3;}
+.ranking-sub{font-size:14px;color:#666;line-height:1.3;}
+/* 响应式微调 */
+@media(max-width:768px){
+  .gauge-wrapper,.metrics-grid{min-width:100%;}
+  .ranking-number{font-size:24px;}
+  .ranking-desc,.ranking-sub{font-size:11px;}
+}
+</style>
+	
+	<style>
+/* ——留言区域整体—— */
+.comment-section{border:1px solid #eae2b7;border-radius:6px;padding:10px;}
+.comment-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.comment-btn{background:#f5a623;color:#fff;border:0;border-radius:20px;padding:6px 15px;font-size:14px;display:flex;align-items:center;cursor:pointer;transition:.3s;}
+.comment-btn i{margin-right:5px;}
+.comment-btn:hover{background:#e8931b;}
+.comment-list{max-height:300px;overflow-y:auto;}
+.comment-item{background:#f8f9fa;border-radius:8px;padding:12px 15px;margin-bottom:12px;position:relative;transition:.3s;}
+.comment-item.new{background:#fff8e6;border-left:3px solid #f5a623;}
+.comment-item-header{display:flex;align-items:center;justify-content:flex-start;margin-bottom:8px;}
+/* 日期现在在左侧显示，字号与之前“分析师”一致 */
+.comment-time{font-size:12px;color:#333;}
+.comment-content{font-size:14px;line-height:1.5;color:#444;word-break:break-word;}
+.comment-actions{position:absolute;top:12px;right:15px;display:flex;gap:8px;}
+.comment-action-btn{background:none;border:none;color:#888;font-size:12px;cursor:pointer;padding:2px 6px;border-radius:3px;transition:.2s;}
+.comment-action-btn:hover{color:#f5a623;background:rgba(245,166,35,.1);}
+.comment-list::-webkit-scrollbar{width:6px;}
+.comment-list::-webkit-scrollbar-track{background:#f1f1f1;border-radius:10px;}
+.comment-list::-webkit-scrollbar-thumb{background:#ddd;border-radius:10px;}
+.comment-list::-webkit-scrollbar-thumb:hover{background:#ccc;}
+.empty-comments{text-align:center;padding:5px 0;color:#888;font-size:14px;}
+.empty-comments i{font-size:40px;margin-bottom:15px;color:#ddd;}
+@media (max-width:575.98px){
+  .comment-btn{padding:5px 12px;font-size:13px;}
+  .comment-item{padding:10px 12px;}
+  .comment-actions{top:10px;right:12px;}
+}
+/* ——模态框—— */
+#commentModal .modal-content{border-radius:10px;overflow:hidden;}
+#commentModal .modal-header{background:#f5a623;color:#fff;padding:12px 15px;}
+#commentModal .modal-title{font-size:16px;font-weight:600;}
+#commentModal .modal-body{padding:20px;}
+#commentModal textarea{width:100%;min-height:120px;border:1px solid #ddd;border-radius:6px;padding:10px;resize:vertical;font-size:14px;}
+#commentModal .modal-footer{padding:12px 15px;border-top:1px solid #eee;}
+#commentModal .btn-cancel{background:#f8f9fa;color:#666;border:1px solid #ddd;}
+#commentModal .btn-cancel:hover{background:#e9ecef;}
+#commentModal .btn-submit{background:#f5a623;color:#fff;border:0;}
+#commentModal .btn-submit:hover{background:#e8931b;}
+</style>
+	
+	
+	
+</head>
+<body>
+<!-- 新增导航条 -->
+<div class="nav-scroller">
+  <nav class="nav"> 
+	 <a class="nav-link" href="#section-overview">舆情概述</a>
+	  <a class="nav-link" href="#section-data">舆情数据</a>
+	  <a class="nav-link" href="#section-trend">舆情走势</a>
+	  <a class="nav-link" href="#section-heat">高热信息</a>
+	  <a class="nav-link" href="#section-increase-trend">舆情增量趋势</a>
+	  <a class="nav-link" href="#section-speed-trend">舆情增速趋势</a>
+	  <a class="nav-link" href="#section-info">新增主要信息</a>
+	  <a class="nav-link" href="#section-opinion">舆论观点</a>
+	  <a class="nav-link" href="#section-account-trend">账号发布趋势</a>
+	  <a class="nav-link" href="#section-media">媒体级别</a>
+	  <a class="nav-link" href="#section-accounts">活跃账号</a>
+	  <a class="nav-link" href="#section-channel">扩散渠道与平台分布</a>
+	  <a class="nav-link" href="#section-wordcloud">高频词统计</a>
+	  <a class="nav-link" href="#section-response">涉事方回应分析</a>
+	  <a class="nav-link" href="#section-engagement">舆情互动趋势</a>
+	  <a class="nav-link" href="#section-interaction">舆情互动分析</a>
+	</nav>
+</div>
+<!-- ✅ logo和标题 -->
+<div class="container" style="max-width: 768px;">
+  <div class="logo-wrapper d-flex justify-content-between align-items-center">
+    <img src="xianjilogo.png" alt="Logo" class="logo-img">
+    <img src="https://www.miaojian.com/mjimages/specialreport/mj-s-White.png" alt="Logo" class="logo-img">
+  </div>
+</div>
+<div class="container container-box"> 
+  <!--✅ 新闻标题-->
+  <div class="title">上海车展首日董明珠“啥声”小米，高管言论底线在哪里？</div>
+  <div class="date-range">数据周期：2025.05.01 08:00 -- 2025.05.08 08:00</div>
+  <!--✅ 概述-->
+  <div id="section-overview" class="section-title">舆情概述</div>
+  <div class="desc-box"> 3月5日，A地产公司J项目售楼处出现大批业主聚集维权的情况。据现场业主反映，J项目在销售时承诺的F市九年一贯制重点学校，现在尚未完成现场施工，不具备今年开学的条件。J项目部分业主认为自己的孩子无法按时入校，耽误入校时间，要求J项目及A地产公司承担责任，完成配套学校建设，保障入学。 </div>
+ 
+	
+<div id="section-data" class="section-title">舆情数据</div>
+
+<!-- 主容器 -->
+<div class="spread-flex-container">
+  <!-- 左侧：MJSI舆情热度仪表盘 -->
+  <div class="gauge-wrapper">
+    <div id="gaugeChart" class="gauge-box"></div>
+  <!--  <div style="color:#fff;margin-top:10px;font-size:12px;font-weight:500;line-height:1.6;text-align:center;">
+      本周热度排名:第&nbsp;<span style="color:#FFFF3F;font-size:16px;">3</span>&nbsp;名
+      <span style="font-size:12px;color:#FFFFFF;">(较上周
+        <svg viewBox="0 0 1024 1024" width="14" height="14" style="vertical-align:-2px;">
+          <path d="M529.143 7.436l347.213 397.875a21.749 21.749 0 0 1-16.376 36.077H689.316a21.493 21.493 0 0 0-21.493 18.678c-12.793 92.624-90.066 502.269-455.957 562.91a21.749 21.749 0 0 1-17.655-38.38c62.688-49.127 144.565-144.31 167.594-313.694a1571.286 1571.286 0 0 0 12.793-207.509 22.261 22.261 0 0 0-21.749-22.26H165.299a21.749 21.749 0 0 1-16.376-36.078L496.392 7.436a21.749 21.749 0 0 1 32.751 0z" fill="#FFFF3F"></path>
+        </svg>&nbsp;<span style="color:#FFFF3F;">2</span>&nbsp;位)</span>
+    </div> -->
+  </div>
+
+  <!-- 右侧：核心指标 -->
+  <div class="metrics-grid">
+    <div class="metric-box"><div class="metric-title">全网声量</div><div class="metric-value">2,959<span>条</span></div></div>
+    <div class="metric-box"><div class="metric-title">全网互动量</div><div class="metric-value">2,959<span>万次</span></div></div>
+    <div class="metric-box"><div class="metric-title">扩散速度</div><div class="metric-value">97<span>条/小时</span></div></div>
+    <div class="metric-box"><div class="metric-title">账号总量</div><div class="metric-value">12,725</div></div>
+  </div>
+</div>
+
+<!-- 排名信息 -->
+<div class="ranking-container d-flex text-center mt-2">
+  <div class="ranking-item flex-fill">
+    <div class="ranking-number" style="font-family:Arial;">05</div>
+    <div class="ranking-desc">涉事品牌事件排名</div>
+    <div class="ranking-sub">超越95%同品牌事件</div>
+  </div>
+  <div class="ranking-item flex-fill">
+    <div class="ranking-number" style="font-family:Arial;">12</div>
+    <div class="ranking-desc">当月行业排名</div>
+    <div class="ranking-sub">超越99%行业案例</div>
+  </div>
+  <div class="ranking-item flex-fill">
+    <div class="ranking-number" style="font-family:Arial;">30</div>
+    <div class="ranking-desc">当月案例库排名</div>
+    <div class="ranking-sub">超越70%当月案例</div>
+  </div>
+</div>
+
+<!-- ECharts 仪表盘 -->
+<script>
+(function () {
+  const chart = echarts.init(document.getElementById('gaugeChart'));
+  const value = 50.8;            // 👉 按实际数据替换
+  chart.setOption({
+    title:{text:'MJSI苗建舆情热度指数',left:'center',top:'2%',textStyle:{color:'#fff',fontSize:14}},
+    series:[{
+      type:'gauge',
+      startAngle:180,endAngle:0,
+      radius:'100%',center:['50%','85%'],
+      min:0,max:100,
+      progress:{show:true,width:13,roundCap:true,itemStyle:{color:'#FFF30A'}},
+      axisLine:{roundCap:true,lineStyle:{width:13,color:[[1,'rgba(157,2,8,0.15)']]}},
+      axisTick:{show:false},splitLine:{show:false},axisLabel:{show:false},
+      pointer:{show:false},anchor:{show:false},title:{show:false},
+      detail:{valueAnimation:true,fontSize:24,fontWeight:'bold',color:'#fff',offsetCenter:[0,'-10%'],
+              formatter:`{valueStyle|${value}}\n{maxStyle|(最高100)}`,
+              rich:{valueStyle:{fontSize:24,fontWeight:'bold',color:'#fff',lineHeight:30},
+                    maxStyle:{fontSize:12,color:'rgba(255,255,255,0.8)',lineHeight:18}}},
+      data:[{value}]
+    }]
+  });
+  window.addEventListener('resize',()=>chart.resize());
+})();
+</script>
+	
+  
+   <!--✅ 舆情走势-->
+ <div id="section-trend" class="section-title">舆情走势</div>
+<div class="desc-box mb-3">截至2025年05月28日 09:15，全网共监测到相关舆情<span style="color:#F6AB00">11834</span>条，本时段新增<span style="color:#F6AB00">1</span>条。</div>
+<div class="trend-btn-group d-flex w-100 mb-3" id="trendTab">
+  <button class="btn flex-fill active" onclick="updateChart('hour', this)">小时级</button>
+  <button class="btn flex-fill" onclick="updateChart('4hour', this)">4小时级</button>
+  <button class="btn flex-fill" onclick="updateChart('day', this)">日级</button>
+</div>
+<div class="trend-chart" id="trendChart"></div>
+	<!-- 📊 舆情走势数据图 --> 
+<script>
+const chart = echarts.init(document.getElementById('trendChart'));
+
+const chartData = {
+  hour: {
+    x: Array.from({length: 24}, (_, i) => `${i}:00`),
+    y: Array.from({length: 24}, () => Math.floor(Math.random() * 40))
+  },
+  '4hour': {
+    x: ['0:00', '4:00', '8:00', '12:00', '16:00', '20:00'],
+    y: [5, 22, 35, 28, 18, 6]
+  },
+  day: {
+    x: ['05-01', '05-03', '05-05', '05-07', '05-09', '05-11', '05-13', '05-15', '05-17', '05-19', '05-21', '05-23', '05-25'],
+    y: [2, 10, 5, 3, 58, 40, 22, 30, 18, 16, 12, 9, 5]
+  },
+  
+};
+
+function updateChart(type, btn) {
+  $('#trendTab .btn').removeClass('active');
+  $(btn).addClass('active');
+
+  const { x, y } = chartData[type];
+  chart.setOption({
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'line' }
+    },
+    xAxis: {
+      type: 'category',
+      data: x,
+      axisLabel: { 
+		  color: '#666',
+	  fontSize: 12,
+			showMaxLabel: true, // ✅ 强制显示末尾标签
+  showMinLabel: true, // ✅ 可选：强制显示开头标签
+	  },
+      axisLine: { lineStyle: { color: '#ccc' }}
+    },
+    yAxis: {
+      type: 'value',
+      name: '单位:条',
+      nameTextStyle: {
+        color: '#666',
+        fontSize: 12,
+        padding: [0, 0, 8, -25]
+      },
+      axisLabel: { color: '#666' },
+      splitLine: { lineStyle: { color: '#eee' }}
+    },
+    grid: {
+      top: '16%',
+      left: '3%',
+      right: '3%',
+      bottom: '0%',
+      containLabel: true
+    },
+    series: [{
+      name: '声量',
+      type: 'line',
+      data: y,
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 6,
+      lineStyle: {
+        color: '#f5a623',
+        width: 2
+      },
+      itemStyle: {
+        color: '#ffffff',
+        borderColor: '#f5a623',
+        borderWidth: 2
+      },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: 'rgba(245,166,35,0.3)' },
+          { offset: 1, color: 'rgba(245,166,35,0)' }
+        ])
+      },
+      markPoint: {
+        data: [{ type: 'max', name: '最大值' }],
+        symbol: 'pin',
+        symbolSize: 60,
+        label: {
+          color: '#fff',
+          fontSize: 12,
+          formatter: '{c}'
+        },
+        itemStyle: {
+          color: '#f5a623'
+        }
+      }
+    }]
+  });
+}
+
+// 默认初始化为小时级
+updateChart('hour', $('#trendTab .btn')[0]);
+</script> 
+	
+	
+<!-- ✅ 高热信息 -->
+  <div id="section-heat" class="section-title mt-4">高热信息</div>
+  <div class="trend-btn-group d-flex w-100 mb-2" id="heatTab">
+	<button class="btn flex-fill active" data-toggle="tab" data-target="#timeline">时间轴</button>
+	<button class="btn flex-fill" data-toggle="tab" data-target="#interact">高互动</button>
+	<button class="btn flex-fill" data-toggle="tab" data-target="#comment">高评论</button>
+    <button class="btn flex-fill" data-toggle="tab" data-target="#spread">高扩散</button>
+	 <button class="btn flex-fill" data-toggle="tab" data-target="#fensi">高粉丝</button>
+  </div>
+  <div class="tab-content" id="heatTabContent"> 
+	     <!-- 时间轴 -->
+    <div class="tab-pane fade show active pt-2" id="timeline">
+      <div class="new-info-list">
+	<div class="timeline-container">
+<div class="timeline">
+<!-- 5月17日 -->
+<div class="timeline-item">
+ <div class="timeline-date d-flex justify-content-between align-items-center">
+    <div>5月17日</div>
+    <div class="platform-tags"><span class="badge badge-light border mr-0 ml-2">华熙生物华熙生物华熙生物</span></div>
+  </div>
+<div class="timeline-content">
+<div class="timeline-dot"></div>
+<div class="timeline-card">
+<div class="timeline-title">华熙生物发布争议文章</div>
+</div>
+</div>
+</div>
+<!-- 5月19日 -->
+<div class="timeline-item">
+ <div class="timeline-date d-flex justify-content-between align-items-center">
+    <div>5月17日</div>
+    <div class="platform-tags"><span class="badge badge-light border mr-0 ml-2">巨子生物</span></div>
+  </div>
+<div class="timeline-content">
+<div class="timeline-dot"></div>
+<div class="timeline-card">
+<div class="timeline-title">行业协会发声</div>
+</div>
+</div>
+</div>
+<!-- 5月21日 -->
+<div class="timeline-item">
+<div class="timeline-date d-flex justify-content-between align-items-center">
+    <div>5月17日</div>
+    <div class="platform-tags"><span class="badge badge-light border mr-0 ml-2">锦波生物</span></div>
+  </div>
+<div class="timeline-content">
+<div class="timeline-dot"></div>
+<div class="timeline-card">
+<div class="timeline-title">华熙生物再次发文</div>
+</div>
+</div>
+</div>
+<!-- 5月24日（合并两个事件） -->
+<div class="timeline-item">
+ <div class="timeline-date d-flex justify-content-between align-items-center pr-2">
+    <div>5月17日</div>
+    <div class="platform-tags"><span class="badge badge-light border mr-0 ml-2">华熙生物</span><span class="badge badge-light border mr-0 ml-2">巨子生物</span></div>
+  </div>
+<div class="timeline-content">
+<div class="timeline-dot"></div>
+<div class="timeline-card">
+<div class="timeline-title">大嘴博士质疑巨子生物</div>
+</div>
+<div class="timeline-card mt-3">
+<div class="timeline-title">巨子生物发布声明</div>
+</div>
+</div>
+</div>
+<!-- 5月25日 -->
+<div class="timeline-item">
+ <div class="timeline-date d-flex justify-content-between align-items-center pr-2">
+    <div>5月17日</div>
+    <div class="platform-tags"><span class="badge badge-light border mr-0 ml-2">巨子生物</span></div>
+  </div>
+<div class="timeline-content">
+<div class="timeline-dot"></div>
+<div class="timeline-card">
+<div class="timeline-title">大嘴博士再次质疑</div>
+</div>
+</div>
+</div>
+<!-- 5月27日 -->
+<div class="timeline-item">
+ <div class="timeline-date d-flex justify-content-between align-items-center pr-2">
+    <div>5月17日</div>
+    <div class="platform-tags"><span class="badge badge-light border mr-0 ml-2">巨子生物</span></div>
+  </div>
+<div class="timeline-content">
+<div class="timeline-dot"></div>
+<div class="timeline-card">
+<div class="timeline-title">大嘴博士发布检测报告</div>
+</div>
+</div>
+</div>
+<!-- 6月1日（合并两个事件） -->
+<div class="timeline-item">
+ <div class="timeline-date d-flex justify-content-between align-items-center pr-2">
+    <div>5月17日</div>
+    <div class="platform-tags"><span class="badge badge-light border mr-0 ml-2">巨子生物</span><span class="badge badge-light border mr-0 ml-2">华熙生物</span></div>
+  </div>
+<div class="timeline-content">
+<div class="timeline-dot"></div>
+<div class="timeline-card">
+<div class="timeline-title">大嘴博士继续发声</div>
+</div>
+<div class="timeline-card mt-3">
+<div class="timeline-title">华熙生物发布支持声明</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+		</div>
+    </div>
+	   <!-- 高互动信息 -->
+    <div class="tab-pane fade" id="interact">
+      <div class="new-info-list">
+		<a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">1</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-01 18:00</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/zhuanfa.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+          <img src="https://www.miaojian.com/mjimages/specialreport/pinglun.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+          <img src="https://www.miaojian.com/mjimages/specialreport/dianzan.png" height="16" style="margin-top: -4px;" alt=""/>12345
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		<a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">2</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-01 20:00</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/zhuanfa.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+          <img src="https://www.miaojian.com/mjimages/specialreport/pinglun.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+          <img src="https://www.miaojian.com/mjimages/specialreport/dianzan.png" height="16" style="margin-top: -4px;" alt=""/>12345
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		  <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">3</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-01 21:00</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/zhuanfa.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+          <img src="https://www.miaojian.com/mjimages/specialreport/pinglun.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+          <img src="https://www.miaojian.com/mjimages/specialreport/dianzan.png" height="16" style="margin-top: -4px;" alt=""/>12345
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		  <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">4</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-01 22:00</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/zhuanfa.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+          <img src="https://www.miaojian.com/mjimages/specialreport/pinglun.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+          <img src="https://www.miaojian.com/mjimages/specialreport/dianzan.png" height="16" style="margin-top: -4px;" alt=""/>12345
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		  <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">5</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-01 22:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/zhuanfa.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+          <img src="https://www.miaojian.com/mjimages/specialreport/pinglun.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+          <img src="https://www.miaojian.com/mjimages/specialreport/dianzan.png" height="16" style="margin-top: -4px;" alt=""/>12345
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		</div>
+    </div>
+	   <!-- 高评论信息 -->
+    <div class="tab-pane fade" id="comment">
+      <div class="new-info-list"> 
+		 <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">1</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 17:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/pinglun.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		 <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">2</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 18:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/pinglun.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		  <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">3</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 19:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/pinglun.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		  <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">4</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 20:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/pinglun.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		  <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">5</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 21:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/pinglun.png" height="18" style="margin-top: -4px;" alt=""/>12345 &nbsp;
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		</div>
+    </div>
+    <!-- 高扩散信息 -->
+    <div class="tab-pane fade" id="spread">
+      <div class="new-info-list"> 
+		<a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">1</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 15:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/xiangsi.png" height="18" style="margin-top: -4px;" alt=""/>12345 
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		 <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">2</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 16:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/xiangsi.png" height="18" style="margin-top: -4px;" alt=""/>12345 
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		  <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">3</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 17:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/xiangsi.png" height="18" style="margin-top: -4px;" alt=""/>12345 
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		  <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">4</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 18:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/xiangsi.png" height="18" style="margin-top: -4px;" alt=""/>12345 
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		  <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">5</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 19:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div>
+          <img src="https://www.miaojian.com/mjimages/specialreport/xiangsi.png" height="18" style="margin-top: -4px;" alt=""/>12345 
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		</div>
+    </div>
+   <!-- 高粉丝 -->
+    <div class="tab-pane fade" id="fensi">
+      <div class="new-info-list">
+		<a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">1</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 20:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div> 粉丝量：1.07亿 </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		<a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">2</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 21:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div> 粉丝量：1.07亿 </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		<a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">3</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 22:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div> 粉丝量：1.07亿 </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		  <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">4</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 23:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div> 粉丝量：1.07亿 </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		  <a href="https://example.com" target="_blank" class="info-card flex-column">
+  <div class="d-flex">
+    <div class="info-index">5</div>
+    <div class="flex-grow-1">
+      <div class="info-content mb-1" style="word-break: break-word;">
+        广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px; margin: -1px 0px 2px 0px;">
+        <div>南方都市报</div>
+        <div>05-04 23:25:10</div>
+      </div>
+      <div class="d-flex justify-content-between" style="color: #646A73; font-size: 13px;">
+        <div> 粉丝量：1.07亿 </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</a>
+		</div>
+    </div>
+   
+  </div>	
+	
+<!-- ✅ 高热信息+折线图联动 -->	
+<script>
+const interactionPointsMap = {
+  hour: {
+    '#interact': [
+      { label: '1', time: '18:00' },
+      { label: '2', time: '20:00' },
+      { label: '3', time: '21:00' },
+      { label: '4', time: '22:00' },
+      { label: '5', time: '22:00' }
+    ],
+    '#comment': [
+      { label: '1', time: '17:00' },
+      { label: '2', time: '18:00' },
+      { label: '3', time: '19:00' },
+      { label: '4', time: '20:00' },
+      { label: '5', time: '21:00' }
+    ],
+    '#spread': [
+      { label: '1', time: '15:00' },
+      { label: '2', time: '16:00' },
+      { label: '3', time: '17:00' },
+      { label: '4', time: '18:00' },
+      { label: '5', time: '19:00' }
+    ],
+    '#fensi': [
+      { label: '1', time: '20:00' },
+      { label: '2', time: '21:00' },
+      { label: '3', time: '22:00' },
+      { label: '4', time: '23:00' },
+      { label: '5', time: '23:00' }
+    ]
+  },
+  '4hour': {
+    '#interact': [
+      { label: '1', time: '16:00' },
+      { label: '2', time: '20:00' },
+      { label: '3', time: '20:00' },
+      { label: '4', time: '20:00' },
+      { label: '5', time: '20:00' }
+    ],
+    '#comment': [
+      { label: '1', time: '16:00' },
+      { label: '2', time: '16:00' },
+      { label: '3', time: '16:00' },
+      { label: '4', time: '16:00' },
+      { label: '5', time: '20:00' }
+    ],
+    '#spread': [
+      { label: '1', time: '12:00' },
+      { label: '2', time: '16:00' },
+      { label: '3', time: '16:00' },
+      { label: '4', time: '16:00' },
+      { label: '5', time: '20:00' }
+    ],
+    '#fensi': [
+      { label: '1', time: '20:00' },
+      { label: '2', time: '20:00' },
+      { label: '3', time: '20:00' },
+      { label: '4', time: '20:00' },
+      { label: '5', time: '20:00' }
+    ]
+  },
+  day: {
+    '#interact': [
+      { label: '1', time: '05-01' },
+      { label: '2', time: '05-01' },
+      { label: '3', time: '05-01' },
+      { label: '4', time: '05-01' },
+      { label: '5', time: '05-01' }
+    ],
+    '#comment': [
+      { label: '1', time: '05-04' },
+      { label: '2', time: '05-04' },
+      { label: '3', time: '05-04' },
+      { label: '4', time: '05-04' },
+      { label: '5', time: '05-04' }
+    ],
+    '#spread': [
+      { label: '1', time: '05-04' },
+      { label: '2', time: '05-04' },
+      { label: '3', time: '05-04' },
+      { label: '4', time: '05-04' },
+      { label: '5', time: '05-04' }
+    ],
+    '#fensi': [
+      { label: '1', time: '05-04' },
+      { label: '2', time: '05-04' },
+      { label: '3', time: '05-04' },
+      { label: '4', time: '05-04' },
+      { label: '5', time: '05-04' }
+    ]
+  }
+};
+
+let currentHeatTab = '#timeline';
+
+function highlightTrendPoints(type) {
+  const show = ['#interact', '#comment', '#spread', '#fensi'].includes(currentHeatTab);
+  const baseData = chartData[type];
+  const points = interactionPointsMap[type]?.[currentHeatTab] || [];
+
+  const markPoints = show ? points.map(pt => ({
+    coord: [pt.time, baseData.y[baseData.x.indexOf(pt.time)]],
+    value: pt.label,
+    symbol: 'circle',
+    symbolSize: 24,
+    itemStyle: {
+      color: '#ffffff',
+	  borderColor: '#F5A623', 
+	  borderWidth: 2
+    },
+    label: {
+      show: true,
+      color: '#F5A623',
+      fontSize: 12,
+      fontWeight: 'bold',
+      formatter: pt.label
+    }
+  })) : [];
+
+  const series = chart.getOption().series[0];
+  chart.setOption({
+    series: [{
+      ...series,
+      markPoint: {
+        ...series.markPoint,
+        data: show 
+          ? [{ type: 'max', name: '最大值' }, ...markPoints] 
+          : [{ type: 'max', name: '最大值' }]
+      }
+    }]
+  });
+}
+
+$(document).ready(function () {
+  $('#heatTab .btn').click(function () {
+    currentHeatTab = $(this).data('target');
+    const type = $('#trendTab .btn.active').text().includes('小时') ? 'hour' :
+                 $('#trendTab .btn.active').text().includes('4小时') ? '4hour' : 'day';
+    highlightTrendPoints(type);
+  });
+
+  $('#trendTab .btn').click(function () {
+    const type = $(this).text().includes('小时') ? 'hour' :
+                 $(this).text().includes('4小时') ? '4hour' : 'day';
+    highlightTrendPoints(type);
+  });
+});
+</script>	
+	
+	
+	
+	
+	
+	
+	<!-- ✅ 舆情增量趋势 -->
+<div id="section-increase-trend" class="section-title mt-4">舆情增量趋势</div>
+<div class="desc-box mb-3">截至2025年06月03日 14:52，全网相关舆情较昨日新增523条，环比降低58.23%。</div>
+<div id="increaseTrendChart" style="width:100%; height:300px;"></div>
+<!-- 📊 舆情增量数据图 --> 
+<script>
+const increaseTrendChart = echarts.init(document.getElementById('increaseTrendChart'));
+
+const increaseData = {
+  x: ['05-17 22', '05-21 19', '05-25 16', '05-29 13', '06-03 14'],
+  y: [0, 3200, 7800, 12600, 16416]
+};
+
+increaseTrendChart.setOption({
+  tooltip: {
+    trigger: 'axis',
+    formatter: function(params) {
+      let p = params[0];
+      return `${p.axisValue}<br/>${p.marker} 累计舆情量：${p.data} 条`;
+    }
+  },
+  grid: {
+    top: '15%',
+    left: '3%',
+    right: '3%',
+    bottom: '5%',
+    containLabel: true
+  },
+  xAxis: {
+    type: 'category',
+    data: increaseData.x,
+    boundaryGap: false,
+    axisLabel: { color: '#666' },
+    axisLine: { lineStyle: { color: '#ccc' } }
+  },
+  yAxis: {
+    type: 'value',
+    name: '(单位:条)',
+    nameTextStyle: {
+      color: '#666',
+      fontSize: 12,
+      padding: [0, 0, 8, -10]
+    },
+    axisLabel: { color: '#666' },
+    splitLine: { lineStyle: { color: '#eee' } }
+  },
+  series: [{
+    name: '累计舆情量',
+    type: 'line',
+    data: increaseData.y,
+    smooth: true,
+    symbol: 'circle',
+    symbolSize: 8,
+    itemStyle: {
+      color: '#ffffff',
+      borderColor: '#F6AB00',
+      borderWidth: 2
+    },
+    lineStyle: {
+      color: '#F6AB00',
+      width: 2
+    },
+    areaStyle: {
+      color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+        { offset: 0, color: 'rgba(246,171,0,0.2)' },
+        { offset: 1, color: 'rgba(246,171,0,0)' }
+      ])
+    },
+    label: {
+      show: true,
+      position: 'top',
+      color: '#F6AB00',
+      fontWeight: 'bold',
+      formatter: function(params) {
+        return params.data === 16416 ? params.data : '';
+      }
+    },
+    markPoint: {
+      data: [{
+        coord: ['06-03 14', 16416],
+        value: 16416
+      }],
+      symbol: 'circle',
+      symbolSize: [10, 10],
+      itemStyle: {
+        color: '#F6AB00'
+      },
+      label: {
+        show: false
+      }
+    }
+  }]
+});
+</script>
+	<!-- ���� 留言区 ���� -->
+<div class="comment-section">
+  <div class="comment-header">
+    <h6 style="font-weight:600;margin:0;color:#8F959E;font-size:14px;"><i class="fas fa-lightbulb"></i>&nbsp;洞察笔记/分析手记</h6>
+    <button class="comment-btn" data-toggle="modal" data-target="#commentModal">
+      <i class="fas fa-plus"></i> 添加笔记
+    </button>
+  </div>
+
+  <div class="comment-list" id="commentList">
+    <div class="empty-comments">
+      <i class="far fa-comment-alt"></i>
+      <p>点击记录您的专业分析见解</p>
+    </div>
+  </div>
+</div>
+	<!-- �� 留言模态框 �� -->
+<div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="commentModalTitle">添加笔记</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <textarea id="commentText" placeholder="请输入您的分析见解..."></textarea>
+        <input type="hidden" id="editCommentId">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-cancel" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-submit" id="saveCommentBtn">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+/* ——舆情增量趋势留言逻辑—— */
+$(function(){
+  let comments = JSON.parse(localStorage.getItem('increaseTrendComments')||'[]');
+
+  function render(){
+    const $list = $('#commentList').empty();
+    if(!comments.length){
+      $list.html('<div class="empty-comments"><i class="fas fa-chart-line"></i><p class="mb-0">点击记录您的专业分析见解</p></div>');
+      return;
+    }
+    comments.sort((a,b)=>new Date(b.time)-new Date(a.time));
+    comments.forEach((c,i)=>{
+      const date = new Date(c.time),
+            ts   = date.toLocaleDateString().replace(/\//g,'-')+' '+date.toTimeString().slice(0,5);
+      $list.append(`
+        <div class="comment-item ${i===0?'new':''}" data-id="${c.id}">
+          <div class="comment-item-header">
+            <div class="comment-time">${ts}</div>
+          </div>
+          <div class="comment-content">${c.text}</div>
+          <div class="comment-actions">
+            <button class="comment-action-btn edit-comment" title="编辑笔记"><i class="fas fa-edit"></i></button>
+            <button class="comment-action-btn delete-comment" title="删除笔记"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        </div>`);
+    });
+  }
+  render();
+
+  /* 保存/更新 */
+  $('#saveCommentBtn').on('click',()=>{
+    const txt = $('#commentText').val().trim(),
+          id  = $('#editCommentId').val();
+    if(!txt){alert('请输入您的分析见解');return;}
+    if(id){
+      const idx = comments.findIndex(c=>c.id===id);
+      if(idx>-1){comments[idx].text=txt;comments[idx].time=new Date().toISOString();}
+    }else{
+      comments.unshift({id:'c_'+Date.now(),text:txt,time:new Date().toISOString()});
+    }
+    localStorage.setItem('increaseTrendComments',JSON.stringify(comments));
+    $('#commentModal').modal('hide');
+    $('#commentText').val('');$('#editCommentId').val('');
+    render();
+  });
+
+  /* 编辑 */
+  $(document).on('click','.edit-comment',function(){
+    const id=$(this).closest('.comment-item').data('id'),
+          c=comments.find(v=>v.id===id);
+    if(c){$('#commentText').val(c.text);$('#editCommentId').val(c.id);$('#commentModalTitle').text('编辑笔记');$('#commentModal').modal('show');}
+  });
+
+  /* 删除 */
+  $(document).on('click','.delete-comment',function(){
+    if(!confirm('确定删除这条笔记吗？'))return;
+    const id=$(this).closest('.comment-item').data('id');
+    comments=comments.filter(v=>v.id!==id);
+    localStorage.setItem('increaseTrendComments',JSON.stringify(comments));
+    render();
+  });
+
+  /* 打开模态框时重置标题 */
+  $('#commentModal').on('show.bs.modal',()=>{$('#commentModalTitle').text('添加笔记');});
+
+  /* 关闭时清空编辑状态 */
+  $('#commentModal').on('hidden.bs.modal',()=>{$('#editCommentId').val('');$('#commentText').val('');});
+});
+</script>
+	
+	<!-- ✅ 舆情增速趋势 -->
+<div id="section-speed-trend" class="section-title mt-4">舆情增速趋势</div>
+<div class="desc-box mb-3">截至2025年06月03日 14:52，全网相关舆情扩散速度为40条/小时，912条/日。</div>
+<div class="trend-btn-group d-flex w-100 mb-3" id="speedTab">
+  <button class="btn flex-fill active" onclick="updateSpeedChart('hour', this)">小时级</button>
+  <button class="btn flex-fill" onclick="updateSpeedChart('4hour', this)">4小时级</button>
+  <button class="btn flex-fill" onclick="updateSpeedChart('day', this)">日级</button>
+</div>
+<div id="speedTrendChart" style="width:100%; height:300px;"></div>
+<!-- 📊 舆情增速数据图 --> 
+<script>
+const speedChart = echarts.init(document.getElementById('speedTrendChart'));
+
+// 模拟数据
+const speedData = {
+  hour: {
+    x: Array.from({length: 24}, (_, i) => `${i}:00`),
+    y: Array.from({length: 24}, () => Math.floor(Math.random() * 50))
+  },
+  '4hour': {
+    x: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+    y: Array.from({length: 6}, () => Math.floor(Math.random() * 60))
+  },
+  day: {
+    x: ['05-17', '05-19', '05-21', '05-23', '05-25', '05-27', '05-29', '06-01', '06-03'],
+    y: Array.from({length: 9}, () => Math.floor(Math.random() * 1000))
+  }
+};
+
+// 绘图函数
+function renderSpeedChart(type) {
+  const { x, y } = speedData[type];
+  const maxVal = Math.max(...y);
+  const maxIndex = y.indexOf(maxVal);
+  const markPoint = [{
+    coord: [x[maxIndex], maxVal],
+    value: maxVal
+  }];
+
+  speedChart.setOption({
+    tooltip: {
+      trigger: 'axis',
+      formatter: function(params) {
+        const p = params[0];
+        return `${p.axisValue}<br/>${p.marker} 舆情增速：${p.data} 条`;
+      }
+    },
+    grid: {
+      top: '12%',
+      left: '3%',
+      right: '3%',
+      bottom: '5%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      data: x,
+      boundaryGap: false,
+      axisLabel: { color: '#666' },
+      axisLine: { lineStyle: { color: '#ccc' } }
+    },
+    yAxis: {
+      type: 'value',
+      name: '(单位:条)',
+      nameTextStyle: {
+        color: '#666',
+        fontSize: 12,
+        padding: [0, 0, 8, -10]
+      },
+      axisLabel: { color: '#666' },
+      splitLine: { lineStyle: { color: '#eee' } }
+    },
+    series: [{
+      name: '舆情增速',
+      type: 'line',
+      data: y,
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 6,
+      itemStyle: {
+        color: '#ffffff',
+        borderColor: '#F6AB00',
+        borderWidth: 2
+      },
+      lineStyle: {
+        color: '#F6AB00',
+        width: 2
+      },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: 'rgba(246,171,0,0.2)' },
+          { offset: 1, color: 'rgba(246,171,0,0)' }
+        ])
+      },
+      label: {
+        show: true,
+        position: 'top',
+        color: '#F6AB00',
+        fontWeight: 'bold',
+        formatter: function(params) {
+          return params.data === maxVal ? `${maxVal}` : '';
+        }
+      },
+      markPoint: {
+        data: markPoint,
+        symbol: 'circle',
+        symbolSize: [10, 10],
+        itemStyle: { color: '#F6AB00' },
+        label: { show: false }
+      }
+    }]
+  });
+}
+
+function updateSpeedChart(type, btn) {
+  $('#speedTab .btn').removeClass('active');
+  $(btn).addClass('active');
+  renderSpeedChart(type);
+}
+
+// 初始化
+renderSpeedChart('hour');
+</script>
+	
+	
+<!--✅ 新增主要信息-->
+  <div id="section-info" class="section-title mt-4">新增主要信息</div>
+  <div class="desc-box-2 mb-3"> 本时段新增原创报道的媒体主要有：央广网、格隆汇、大智慧、微信 - 克而瑞物管等，详情如下： </div>
+  <div class="new-info-list"> <a href="https://finance.eastmoney.com/a/202505053395847480.html" target="_blank" class="info-card">
+    <div class="info-index">1</div>
+    <div class="info-content">
+      <div><strong>央广网</strong></div>
+      <div>华润万象生活：2024年股东应占利润为36.29亿元，同比增长23.9%</div>
+    </div>
+    </a> <a href="https://finance.eastmoney.com/a/202505053395847480.html" target="_blank" class="info-card">
+    <div class="info-index">2</div>
+    <div class="info-content">
+      <div><strong>央广网</strong></div>
+      <div>华润万象生活：2024年股东应占利润为36.29亿元，同比增长23.9%</div>
+    </div>
+    </a> <a href="https://finance.eastmoney.com/a/202505053395847480.html" target="_blank" class="info-card">
+    <div class="info-index">3</div>
+    <div class="info-content">
+      <div><strong>央广网</strong></div>
+      <div>华润万象生活：2024年股东应占利润为36.29亿元，同比增长23.9%</div>
+    </div>
+    </a> </div>
+	
+	
+	
+	<!--✅ 舆论观点（AI生成）-->
+  <div id="section-opinion" class="section-title mt-4">舆论观点（AI生成）</div>
+  <div class="trend-btn-group d-flex w-100 mb-3" id="opinionTab">
+    <button class="btn flex-fill active" data-target="#mediaOpinion">新闻媒体</button>
+    <button class="btn flex-fill" data-target="#kolOpinion">意见领袖</button>
+    <button class="btn flex-fill" data-target="#netizenOpinion">网民</button>
+  </div>
+  <div class="tab-content"> 
+    <!-- 媒体观点 -->
+    <div class="tab-pane fade show active" id="mediaOpinion">
+      <div class="desc-box-3 mb-3"><b>关注焦点：</b>行业规范缺位是核心矛盾。</div>
+      <div class="main-category-list"> 
+        <!-- 行业标准缺失与监管争议 -->
+        <div class="main-category-card opinion-card mb-3">
+          <div class="opinion-header" data-toggle="collapse" data-target="#mediaFocus1">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="font-weight-bold font-14">行业标准缺失与监管争议 （50%）</div>
+              <i class="fas fa-chevron-down transition"></i> </div>
+            <div class="progress mt-2" style="height: 3px;">
+              <div class="progress-bar" style="width:50%;background-color:#f5a623"></div>
+            </div>
+          </div>
+          <div class="collapse" id="mediaFocus1">
+            <div class="pt-2">
+			 <div class=" font-14">聚焦重组胶原蛋白检测方法不统一（如HPLC法 vs 双缩脲法），呼吁国家尽快制定行业标准。例如：</div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                   <div class="text-muted small" style="display:none;">核心内容</div>
+                    <div class="font-weight-bold font-14">"目前国内尚无统一的成品检测标准，不同机构因方法差异得出的结果可能天差地别"</div>
+                    <div class="text-muted small mt-1">21世纪经济报道</div>
+                  </div>
+                </div>
+              </div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                     <div class="font-weight-bold font-14">"化妆品中的重组胶原蛋白含量尚无国家标准，检测方法争议凸显行业痛点"</div>
+                    <div class="text-muted small mt-1">国际金融报</div>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+        
+        <!-- 巨子生物危机公关与市场影响 -->
+        <div class="main-category-card opinion-card mb-3">
+          <div class="opinion-header" data-toggle="collapse" data-target="#mediaFocus2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="font-weight-bold font-14">巨子生物危机公关与市场影响（30%）</div>
+              <i class="fas fa-chevron-down transition"></i> </div>
+            <div class="progress mt-2" style="height: 3px;">
+              <div class="progress-bar" style="width:30%;background-color:#f5a623"></div>
+            </div>
+          </div>
+          <div class="collapse" id="mediaFocus2">
+            <div class="pt-2">
+			 <div class=" font-14">关注公司声明内容及股价波动：</div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"巨子生物否认造假并委托第三方复检，但股价两日累计下跌10%，市值蒸发79亿港元"</div>
+                    <div class="text-muted small mt-1">第一财经</div>
+                  </div>
+                </div>
+              </div>
+				<div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"618大促前夕争议发酵，或引发消费者退货潮"</div>
+                    <div class="text-muted small mt-1">21世纪经济报道</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 技术讨论 -->
+        <div class="main-category-card opinion-card mb-3">
+          <div class="opinion-header" data-toggle="collapse" data-target="#mediaFocus3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="font-weight-bold" style="font-size:14px;">商业竞争与资本博弈（20%）</div>
+              <i class="fas fa-chevron-down transition"></i> </div>
+            <div class="progress mt-2" style="height: 3px;">
+              <div class="progress-bar" style="width:20%;background-color:#f5a623"></div>
+            </div>
+          </div>
+          <div class="collapse" id="mediaFocus3">
+            <div class="pt-2">
+			 <div class=" font-14">关联华熙生物此前对胶原蛋白赛道的质疑：</div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"华熙生物曾发文暗指巨子生物通过券商研报贬低透明质酸产业"</div>
+                    <div class="text-muted small mt-1">东北新闻网</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+       
+      </div>
+      
+      <!-- 展开按钮 -->
+      <div class="text-center mt-3 mb-3">
+        <button class="btn category-expand-btn" onclick="toggleMainCategories(this)"> 展开全部 <i class="fas fa-angle-down ml-2"></i> </button>
+      </div>
+    </div>
+    
+    <!-- KOL观点 -->
+    <div class="tab-pane fade" id="kolOpinion">
+      <div class="desc-box-3 mb-3"><b>关注焦点：</b>巨子生物需直面科学质疑。</div>
+      <div class="main-category-list"> 
+        <!-- 产品成分真实性质疑 -->
+        <div class="main-category-card opinion-card mb-3">
+          <div class="opinion-header" data-toggle="collapse" data-target="#kolFocus1">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="font-weight-bold" style="font-size:14px;">产品成分真实性质疑（60%）</div>
+              <i class="fas fa-chevron-down transition"></i> </div>
+            <div class="progress mt-2" style="height: 3px;">
+              <div class="progress-bar" style="width:60%;background-color:#f5a623"></div>
+            </div>
+          </div>
+          <div class="collapse" id="kolFocus1">
+            <div class="pt-2">
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"检测显示胶原蛋白含量仅0.0177%，且缺失甘氨酸，涉嫌虚假标注"</div>
+                    <div class="text-muted small mt-1">大嘴博士</div>
+                  </div>
+                </div>
+              </div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"二肽命名为‘小分子胶原蛋白’属科学概念滥用"</div>
+                    <div class="text-muted small mt-1">拾盐士</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 检测方法科学性争议 -->
+        <div class="main-category-card opinion-card mb-3">
+          <div class="opinion-header" data-toggle="collapse" data-target="#kolFocus2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="font-weight-bold" style="font-size:14px;">检测方法科学性争议（30%）</div>
+              <i class="fas fa-chevron-down transition"></i> </div>
+            <div class="progress mt-2" style="height: 3px;">
+              <div class="progress-bar" style="width:30%;background-color:#f5a623"></div>
+            </div>
+          </div>
+          <div class="collapse" id="kolFocus2">
+            <div class="pt-2">
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"巨子生物采用的双缩脲法在复杂配方中易受干扰，结果可能虚高"</div>
+                    <div class="text-muted small mt-1">大嘴博士</div>
+                  </div>
+                </div>
+              </div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"呼吁多机构交叉验证而非企业自检"</div>
+                    <div class="text-muted small mt-1">大嘴博士二次回应</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 利益关联猜测 -->
+        <div class="main-category-card opinion-card mb-3">
+          <div class="opinion-header" data-toggle="collapse" data-target="#kolFocus3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="font-weight-bold" style="font-size:14px;">利益关联猜测（10%）</div>
+              <i class="fas fa-chevron-down transition"></i> </div>
+            <div class="progress mt-2" style="height: 3px;">
+              <div class="progress-bar" style="width:20%;background-color:#f5a623"></div>
+            </div>
+          </div>
+          <div class="collapse" id="kolFocus3">
+            <div class="pt-2">
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"网友质疑大嘴博士与华熙生物存在合作，但其否认称‘商战棋子论无依据’"</div>
+                    <div class="text-muted small mt-1">21世纪经济报道</div>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 展开按钮 -->
+      <div class="text-center mt-3 mb-3">
+        <button class="btn category-expand-btn" onclick="toggleMainCategories(this)"> 展开全部 <i class="fas fa-angle-down ml-2"></i> </button>
+      </div>
+    </div>
+    
+    <!-- 网友观点 -->
+    <div class="tab-pane fade" id="netizenOpinion">
+      <div class="desc-box-3 mb-3"><b>关注焦点：</b>求真、问责、选择困惑。</div>
+      <div class="main-category-list"> 
+        <!-- 玩梗与调侃 -->
+        <div class="main-category-card opinion-card mb-3">
+          <div class="opinion-header" data-toggle="collapse" data-target="#netizenFocus1">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="font-weight-bold" style="font-size:14px;">对产品真实性的质疑（45%）</div>
+              <i class="fas fa-chevron-down transition"></i> </div>
+            <div class="progress mt-2" style="height: 3px;">
+              <div class="progress-bar" style="width:45%;background-color:#f5a623"></div>
+            </div>
+          </div>
+          <div class="collapse" id="netizenFocus1">
+            <div class="pt-2">
+				<div class=" font-14">检测结果争议：</div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"大嘴博士的检测显示胶原蛋白含量仅0.0177%，远低于标注的0.1%，这算不算欺诈？"</div>
+                    <div class="text-muted small mt-1">（微博热评）</div>
+                  </div>
+                </div>
+              </div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"连胶原蛋白的关键氨基酸甘氨酸都测不出，巨子生物的解释太牵强"</div>
+                    <div class="text-muted small mt-1">抖音高赞评论</div>
+                  </div>
+                </div>
+              </div>
+				<div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"1.0版本突然全网下架，2.0版本紧急上市，这不是心虚是什么？"</div>
+                    <div class="text-muted small mt-1">小红书讨论</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 品牌信任危机 -->
+        <div class="main-category-card opinion-card mb-3">
+          <div class="opinion-header" data-toggle="collapse" data-target="#netizenFocus2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="font-weight-bold" style="font-size:14px;">品牌信任危机（30%）</div>
+              <i class="fas fa-chevron-down transition"></i> </div>
+            <div class="progress mt-2" style="height: 3px;">
+              <div class="progress-bar" style="width:30%;background-color:#f5a623"></div>
+            </div>
+          </div>
+          <div class="collapse" id="netizenFocus2">
+            <div class="pt-2">
+			<div class=" font-14">消费者态度分化：</div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"用了三年可复美，这次真的失望，等官方拿出更有力的证据再说"</div>
+                    <div class="text-muted small mt-1">淘宝买家</div>
+                  </div>
+                </div>
+              </div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"618预售都付款了，看到争议马上申请退款"</div>
+                    <div class="text-muted small mt-1">京东用户晒退款截图</div>
+                  </div>
+                </div>
+              </div>
+			 <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"支持巨子生物！用了这么多年效果很好，不信自媒体抹黑"</div>
+                    <div class="text-muted small mt-1">可复美官微评论区</div>
+                  </div>
+                </div>
+              </div>
+				<div class=" font-14">对声明的质疑：</div>
+				<div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"自己检测自己还说没问题，当消费者是傻子？"</div>
+                    <div class="text-muted small mt-1">知乎热帖</div>
+                  </div>
+                </div>
+              </div>
+				<div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"第三方检测机构名单都不敢公布，怎么让人信服？"</div>
+                    <div class="text-muted small mt-1">虎扑讨论</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 对行业乱象的愤怒 -->
+        <div class="main-category-card opinion-card mb-3">
+          <div class="opinion-header" data-toggle="collapse" data-target="#netizenFocus3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="font-weight-bold" style="font-size:14px;">对行业乱象的愤怒（15%）</div>
+              <i class="fas fa-chevron-down transition"></i> </div>
+            <div class="progress mt-2" style="height: 3px;">
+              <div class="progress-bar" style="width:10%;background-color:#f5a623"></div>
+            </div>
+          </div>
+          <div class="collapse" id="netizenFocus3">
+            <div class="pt-2">
+				<div class=" font-14">行业标准缺失：</div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"没有统一检测标准，企业说啥就是啥，监管部门在干嘛？"</div>
+                    <div class="text-muted small mt-1" style="display:none;">微博话题</div>
+                  </div>
+                </div>
+              </div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"玻尿酸、胶原蛋白轮流炒概念，最后都是消费者买单"</div>
+                    <div class="text-muted small mt-1" style="display:none;">B站UP主视频评论</div>
+                  </div>
+                </div>
+              </div>
+				<div class=" font-14">资本操控质疑：</div>
+				<div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"华熙刚炮轰完，就有大V出来打假，这商战太明显了"</div>
+                    <div class="text-muted small mt-1" style="display:none;">豆瓣小组</div>
+                  </div>
+                </div>
+              </div>
+				<div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"不管是不是商战，产品有问题就该认"</div>
+                    <div class="text-muted small mt-1" style="display:none;">抖音网友</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+		  
+		   <!-- 监管诉求 -->
+        <div class="main-category-card opinion-card mb-3">
+          <div class="opinion-header" data-toggle="collapse" data-target="#netizenFocus4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="font-weight-bold" style="font-size:14px;">监管诉求（10%）</div>
+              <i class="fas fa-chevron-down transition"></i> </div>
+            <div class="progress mt-2" style="height: 3px;">
+              <div class="progress-bar" style="width:10%;background-color:#f5a623"></div>
+            </div>
+          </div>
+          <div class="collapse" id="netizenFocus4">
+            <div class="pt-2">
+				<div class=" font-14">要求政府介入：</div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"西安市场监管局别光'关注'，直接查封检测啊"</div>
+                    <div class="text-muted small mt-1" style="display:none;">微博热评</div>
+                  </div>
+                </div>
+              </div>
+              <div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"希望国家药监局尽快出台胶原蛋白检测标准"</div>
+                    <div class="text-muted small mt-1" style="display:none;">央视新闻评论区</div>
+                  </div>
+                </div>
+              </div>
+				<div class="quote-box mb-3">
+                <div class="d-flex">
+                  <div class="text-warning mr-2"><i class="fas fa-quote-left"></i></div>
+                  <div>
+                    <div class="text-muted small" style="display:none;">--</div>
+                    <div class="font-weight-bold font-14">"消费者协会应该介入调查"</div>
+                    <div class="text-muted small mt-1" style="display:none;">今日头条网友</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+		  
+		  
+		  
+		  
+		  
+		  
+      </div>
+      
+      <!-- 展开按钮 -->
+      <div class="text-center mt-3 mb-3">
+        <button class="btn category-expand-btn" onclick="toggleMainCategories(this)"> 展开全部 <i class="fas fa-angle-down ml-2"></i> </button>
+      </div>
+    </div>
+  </div>
+
+	
+	<!-- ✅ 账号发布趋势 -->
+<div id="section-account-trend" class="section-title mt-4">账号发布趋势</div>
+<div id="accountTrendChart" style="width:100%; height:300px;"></div>
+<!-- 📊 账号发布趋势数据图 --> 
+<script>
+const accountTrendChart = echarts.init(document.getElementById('accountTrendChart'));
+
+const xLabels = ['2025/05/17', '2025/05/19', '2025/05/21', '2025/05/23', '2025/05/25', '2025/05/27', '2025/05/29'];
+const dataCount = [68, 65, 18, 40, 78, 35, 42];
+const dataIncrease = [120, 122, 95, 35, 120, 40, 45];
+
+const maxIndexCount = dataCount.indexOf(Math.max(...dataCount));
+const maxIndexIncrease = dataIncrease.indexOf(Math.max(...dataIncrease));
+
+accountTrendChart.setOption({
+  tooltip: {
+    trigger: 'axis',
+    formatter: function(params) {
+      let res = params[0].axisValue + '<br/>';
+      params.forEach(item => {
+        res += `${item.marker} ${item.seriesName}: ${item.data}<br/>`;
+      });
+      return res;
+    }
+  },
+  legend: {
+    data: ['账号数量', '增量'],
+    top: 'top',
+    icon: 'circle',
+    itemWidth: 10,
+    itemHeight: 10,
+    textStyle: { fontSize: 12, color: '#666' }
+  },
+  grid: {
+    top: '17%',
+    left: '3%',
+    right: '3%',
+    bottom: '3%',
+    containLabel: true
+  },
+  xAxis: {
+    type: 'category',
+    data: xLabels,
+    axisLine: { lineStyle: { color: '#ccc' }},
+    axisLabel: { color: '#999' }
+  },
+  yAxis: {
+    type: 'value',
+    name: '单位：个',
+    nameLocation: 'end',  // 改为end更符合常规显示
+    nameGap: 10,
+    nameTextStyle: {
+      color: '#666',
+      fontSize: 12,
+      padding: [0, 0, 8, -10],
+    },
+    axisLabel: { color: '#999' },
+    splitLine: { lineStyle: { color: '#eee' } }
+  },
+  series: [
+    {
+      name: '账号数量',
+      type: 'line',
+      data: dataCount,
+      smooth: false,
+      symbol: 'circle',
+      symbolSize: 8,
+      itemStyle: {
+        color: '#ffffff',
+        borderColor: '#F6AB00',
+        borderWidth: 2
+      },
+      lineStyle: {
+        color: '#F6AB00',
+        width: 2
+      },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: 'rgba(246,171,0,0.2)' },
+          { offset: 1, color: 'rgba(246,171,0,0)' }
+        ])
+      },
+      markPoint: {
+        data: [{
+          coord: [xLabels[maxIndexCount], dataCount[maxIndexCount]],
+          value: `账号数量：${dataCount[maxIndexCount]}`
+        }],
+        symbol: 'rect',
+        symbolSize: [120, 30],
+        symbolOffset: [0, -20],
+        label: {
+          color: '#fff',
+          fontSize: 12,
+          formatter: '{c}'
+        },
+        itemStyle: {
+          color: '#F6AB00'
+        }
+      }
+    },
+    {
+      name: '增量',
+      type: 'line',
+      data: dataIncrease,
+      smooth: false,
+      symbol: 'circle',
+      symbolSize: 8,
+      itemStyle: {
+        color: '#ffffff',
+        borderColor: '#999999',
+        borderWidth: 2
+      },
+      lineStyle: {
+        color: '#999999',
+        width: 2,
+        type: 'dashed'
+      },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: 'rgba(153,153,153,0.2)' },
+          { offset: 1, color: 'rgba(153,153,153,0)' }
+        ])
+      },
+      markPoint: {
+        data: [{
+          coord: [xLabels[maxIndexIncrease], dataIncrease[maxIndexIncrease]],
+          value: `增量：${dataIncrease[maxIndexIncrease]}`
+        }],
+        symbol: 'rect',
+        symbolSize: [100, 30],
+        symbolOffset: [0, -20],
+        label: {
+          color: '#fff',
+          fontSize: 12,
+          formatter: '{c}'
+        },
+        itemStyle: {
+          color: '#999999'
+        }
+      }
+    }
+  ]
+});
+</script>
+	
+	
+	
+<!-- ✅ 媒体级别 + 活跃账号 模块 -->
+<div id="section-media" class="section-title mt-4">媒体级别</div>
+<div class="media-accounts-module">
+  <div class="trend-btn-group d-flex w-100 mb-2" id="mediaLevelTab">
+    <button class="btn flex-fill active" id="volumeBtn">声量统计</button>
+    <button class="btn flex-fill" id="ratioBtn">占比统计</button>
+  </div>
+  <div id="mediaLevelChart" style="height: 320px; width: 100%; margin-bottom: 20px;"></div>
+
+  <div class="section-title mt-4">活跃账号</div>
+  <div id="activeAccountsChart" style="height: 380px; width: 100%;"></div>
+</div>
+
+<!-- 新闻列表模态框 -->
+<div class="modal fade" id="newsModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background:#f6ab00;color:#ffffff;">
+        <h5 class="modal-title" id="newsModalTitle">账号新闻列表</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="newsList" class="list-group"></div>
+      </div>
+      <div class="modal-footer">
+        <div style="flex: 1; text-align: left; color: #666; font-size: 13px;">仅显示10条</div><button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// 数据源
+const mediaLevelData = {
+  categories: ['央级', '省部级', '市县级', '商业媒体', '其他', '其他2'],
+  volume: [120, 85, 65, 210, 45, 30],
+  ratio: [23.1, 16.3, 12.5, 40.4, 5.1, 2.6]
+};
+
+// 模拟新闻数据
+const newsData = {
+  '人民网': [
+    {title: '人民网评论：科技创新引领未来发展', url: 'https://example.com/news1', },
+    {title: '人民网专题报道：数字化转型助力企业升级', url: 'https://example.com/news2',},
+    {title: '人民网专访：行业专家解读最新政策', url: 'https://example.com/news3',},
+	   {title: '人民网评论：科技创新引领未来发展', url: 'https://example.com/news1', },
+    {title: '人民网专题报道：数字化转型助力企业升级', url: 'https://example.com/news2',},
+    {title: '人民网专访：行业专家解读最新政策', url: 'https://example.com/news3',},
+	   {title: '人民网评论：科技创新引领未来发展', url: 'https://example.com/news1', },
+    {title: '人民网专题报道：数字化转型助力企业升级', url: 'https://example.com/news2',},
+    {title: '人民网专访：行业专家解读最新政策', url: 'https://example.com/news3',},
+	   {title: '人民网评论：科技创新引领未来发展', url: 'https://example.com/news1', },
+    {title: '人民网专题报道：数字化转型助力企业升级', url: 'https://example.com/news2',},
+    {title: '人民网专访：行业专家解读最新政策', url: 'https://example.com/news3',}
+  ],
+  '新华网': [
+    {title: '新华网快讯：重大科技成果发布会举行', url: 'https://example.com/news4',},
+    {title: '新华网深度报道：区域经济发展新趋势', url: 'https://example.com/news5', },
+    {title: '新华网特别策划：绿色能源发展路径', url: 'https://example.com/news6',}
+  ],
+  '央视新闻': [
+    {title: '央视新闻联播：全国科技创新大会召开', url: 'https://example.com/news7',},
+    {title: '央视新闻专题：人工智能应用新突破', url: 'https://example.com/news8',},
+    {title: '央视新闻快讯：重大基础设施建设进展', url: 'https://example.com/news9', }
+  ],
+  '澎湃新闻': [
+    {title: '澎湃新闻调查：消费者权益保护现状', url: 'https://example.com/news10',},
+    {title: '澎湃新闻评论：数字经济时代新机遇', url: 'https://example.com/news11', },
+    {title: '澎湃新闻专访：行业领袖谈创新发展', url: 'https://example.com/news12',}
+  ],
+  '新京报': [
+    {title: '新京报头条：教育改革新政策解读', url: 'https://example.com/news13', },
+    {title: '新京报深度：医疗健康产业新趋势', url: 'https://example.com/news14',},
+    {title: '新京报评论：城市可持续发展路径', url: 'https://example.com/news15', }
+  ],
+  '杭州日报': [
+    {title: '杭州日报头条：本地企业创新成果展示', url: 'https://example.com/news16',},
+    {title: '杭州日报专题：智慧城市建设进展', url: 'https://example.com/news17', },
+    {title: '杭州日报评论：文化产业发展新思路', url: 'https://example.com/news18', }
+  ],
+  '广州日报': [
+    {title: '广州日报头条：区域经济合作新机遇', url: 'https://example.com/news19', },
+    {title: '广州日报深度：科技创新园区建设', url: 'https://example.com/news20', },
+    {title: '广州日报评论：绿色交通发展路径', url: 'https://example.com/news21',}
+  ],
+  '界面新闻': [
+    {title: '界面新闻快讯：金融市场最新动态', url: 'https://example.com/news22',},
+    {title: '界面新闻深度：消费市场趋势分析', url: 'https://example.com/news23', },
+    {title: '界面新闻专访：企业CEO谈发展战略', url: 'https://example.com/news24',}
+  ],
+  '虎嗅': [
+    {title: '虎嗅深度：科技行业投资新趋势', url: 'https://example.com/news25', },
+    {title: '虎嗅评论：互联网行业监管新规解读', url: 'https://example.com/news26',},
+    {title: '虎嗅分析：新兴技术应用前景', url: 'https://example.com/news27', }
+  ],
+  '知乎': [
+    {title: '知乎专栏：社会热点问题深度探讨', url: 'https://example.com/news28',},
+    {title: '知乎圆桌：教育创新实践分享', url: 'https://example.com/news29',},
+    {title: '知乎专题：科技与人文的交叉点', url: 'https://example.com/news30', }
+  ]
+};
+
+const activeAccountsData = {
+  all: [
+    {name: '人民网', value: 42, level: '央级'},
+    {name: '新华网', value: 38, level: '央级'},
+    {name: '央视新闻', value: 36, level: '央级'},
+    {name: '澎湃新闻', value: 25, level: '省部级'},
+    {name: '新京报', value: 22, level: '省部级'},
+    {name: '杭州日报', value: 18, level: '市县级'},
+    {name: '广州日报', value: 16, level: '市县级'},
+    {name: '界面新闻', value: 45, level: '商业媒体'},
+    {name: '虎嗅', value: 32, level: '商业媒体'},
+    {name: '知乎', value: 15, level: '其他'}
+  ],
+  '央级': [{name: '人民网', value: 42}, {name: '新华网', value: 38}, {name: '央视新闻', value: 36}],
+  '省部级': [{name: '澎湃新闻', value: 25}, {name: '新京报', value: 22}],
+  '市县级': [{name: '杭州日报', value: 18}, {name: '广州日报', value: 16}],
+  '商业媒体': [{name: '界面新闻', value: 45}, {name: '虎嗅', value: 32}],
+  '其他': [{name: '知乎', value: 15}],
+  '其他2': [{name: '简书', value: 8}]
+};
+
+// ✅ 数据降序排序处理
+(function sortData() {
+  const combined = mediaLevelData.categories.map((category, i) => ({
+    category,
+    volume: mediaLevelData.volume[i],
+    ratio: mediaLevelData.ratio[i]
+  }));
+  combined.sort((a, b) => b.volume - a.volume);
+  mediaLevelData.categories = combined.map(item => item.category);
+  mediaLevelData.volume = combined.map(item => item.volume);
+  mediaLevelData.ratio = combined.map(item => item.ratio);
+
+  Object.keys(activeAccountsData).forEach(key => {
+    activeAccountsData[key] = [...activeAccountsData[key]].sort((a, b) => b.value - a.value);
+  });
+})();
+
+const donutColors = ['#EDB458', '#E8871E', '#86BBD8', '#BAD4AA', '#D4D4AA', '#EBF5DF'];
+let currentChartType = 'volume';
+let selectedCategory = null;
+
+const mediaLevelChart = echarts.init(document.getElementById('mediaLevelChart'));
+const activeAccountsChart = echarts.init(document.getElementById('activeAccountsChart'));
+
+// 显示新闻列表模态框
+function showNewsModal(accountName) {
+  const news = newsData[accountName] || [];
+  const newsList = document.getElementById('newsList');
+  const modalTitle = document.getElementById('newsModalTitle');
+  
+  // 设置模态框标题
+  modalTitle.textContent = `${accountName} - 相关新闻`;
+  
+  // 清空现有内容
+  newsList.innerHTML = '';
+  
+  // 添加新闻列表
+  if (news.length === 0) {
+    newsList.innerHTML = '<div class="text-center py-4">暂无相关新闻</div>';
+  } else {
+    news.forEach((item, index) => {
+      const newsItem = document.createElement('a');
+      newsItem.href = item.url;
+      newsItem.target = '_blank';
+      newsItem.className = 'list-group-item list-group-item-action flex-column align-items-start';
+		// 添加间隔样式类
+      newsItem.classList.add(index % 2 === 0 ? 'even-item' : 'odd-item');
+		
+      newsItem.innerHTML = `
+        <div class="d-flex w-100 justify-content-between">
+          <h6 class="mb-1">${index + 1}. ${item.title}</h6>
+        </div>
+      `;
+      newsList.appendChild(newsItem);
+    });
+  }
+  
+  // 显示模态框
+  $('#newsModal').modal('show');
+}
+
+// 📊 媒体级别图表
+function renderMediaLevelChart(type) {
+  currentChartType = type;
+  const isBar = type === 'volume';
+
+  const option = {
+    tooltip: {
+      trigger: 'item',
+      formatter: isBar ? '{b}: {c}条' : '{b}: {d}%'
+    },
+    series: [{
+      name: '媒体级别',
+      type: isBar ? 'bar' : 'pie',
+      radius: isBar ? null : ['35%', '65%'],
+      center: isBar ? null : ['50%', '45%'],
+      barWidth: isBar ? '30%' : undefined,  // ✅ 固定柱宽
+      data: mediaLevelData.categories.map((category, index) => {
+        const isSelected = selectedCategory === category;
+        return {
+          name: category,
+          value: isBar ? mediaLevelData.volume[index] : mediaLevelData.ratio[index],
+          itemStyle: {
+            color: isBar ? '#F5A623' : donutColors[index % donutColors.length],
+            opacity: selectedCategory && !isSelected ? 0.3 : 1,
+            borderRadius: isBar ? [6, 6, 0, 0] : 0 // ✅ 设置圆角，仅柱状图
+          },
+          label: isBar ? {
+            show: true,
+            position: 'top',
+            formatter: '{c}',
+            color: '#333',
+            fontSize: 12
+          } : undefined,
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.3)'
+            }
+          }
+        };
+      }),
+      label: {
+        show: !isBar,
+        formatter: '{b}: {d}%'
+      },
+      labelLine: {
+        show: !isBar
+      }
+    }],
+    grid: isBar ? {
+      left: '3%',
+      right: '4%',
+      bottom: '5%',
+      top: '10%',
+      containLabel: true
+    } : {},
+    xAxis: isBar ? {
+      type: 'category',
+      data: mediaLevelData.categories,
+      axisLine: { lineStyle: { color: '#ccc' } },
+      axisLabel: { color: '#666' }
+    } : undefined,
+    yAxis: isBar ? {
+      type: 'value',
+      name: '单位：条', // ✅ 添加单位名称
+      nameLocation: 'end', // 显示在轴线上方末尾
+      nameTextStyle: {
+        color: '#666',
+        fontSize: 12,
+        padding: [0, 0, 0, -20] // 与坐标轴文字的间距
+      },
+      axisLine: { show: false },
+      splitLine: { lineStyle: { color: '#f0f0f0' } },
+      axisLabel: { color: '#666' }
+    } : undefined
+  };
+
+  mediaLevelChart.setOption(option, true); // 强制刷新
+}
+
+// 📊 活跃账号图表
+function renderActiveAccountsChart(category = 'all') {
+  const data = activeAccountsData[category].slice(0, 10);
+
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: '{b}: {c}条'
+    },
+    legend: {
+      data: [category === 'all' ? '全部' : category],  // ✅ 设置动态图例
+      icon: 'circle', 
+      top: 0,
+      left: 'center',
+      textStyle: { color: '#666' },
+      itemStyle: {
+        color: '#F5A623'  // 设置图例圆形颜色为条形图颜色
+      },
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '5%',
+      top: '5%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'value',
+      name: '单位：条', // ✅ 添加单位名称
+      nameLocation: 'end',
+      nameTextStyle: {
+        color: '#666',
+        fontSize: 12,
+        padding: [0, 0, 0, -60] // 控制名称与轴之间的距离
+      },
+      axisLine: { show: false },
+      axisLabel: { color: '#666' },
+      splitLine: { lineStyle: { color: '#f0f0f0' } }
+    },
+    yAxis: {
+      type: 'category',
+      data: data.map(item => item.name),
+      axisLine: { lineStyle: { color: '#ccc' } },
+      axisLabel: { color: '#666' },
+      inverse: true  // 确保降序排列（最大的在最上面）
+    },
+    series: [{
+      name: category === 'all' ? '全部' : category, // ✅ 配合 legend 动态设置
+      type: 'bar',
+      barWidth: 20,
+      data: data.map(item => ({
+        value: item.value,
+        itemStyle: { 
+          color: '#F5A623',
+          borderRadius: [0, 6, 6, 0]  // ✅ 设置圆角
+        }
+      })),
+      label: {
+        show: true,
+        position: 'right',
+        formatter: '{c}',
+        color: '#333'
+      },
+      // 添加点击事件
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }]
+  };
+
+   const chartHeight = Math.max(260, data.length * 35 + 100);
+  document.getElementById('activeAccountsChart').style.height = `${chartHeight}px`;
+  activeAccountsChart.resize();
+  activeAccountsChart.setOption(option);
+  
+  // 添加点击事件处理
+  activeAccountsChart.off('click');
+  activeAccountsChart.on('click', (params) => {
+    if (params.componentType === 'series' && params.seriesType === 'bar') {
+      const accountName = params.name;
+      showNewsModal(accountName);
+    }
+  });
+}
+
+// 初始化渲染
+renderMediaLevelChart('volume');
+renderActiveAccountsChart();
+
+// 图表交互
+mediaLevelChart.on('click', (params) => {
+  const category = params.name;
+  selectedCategory = selectedCategory === category ? null : category;
+  renderMediaLevelChart(currentChartType);
+  renderActiveAccountsChart(selectedCategory || 'all');
+});
+
+document.getElementById('volumeBtn').addEventListener('click', () => {
+  document.getElementById('volumeBtn').classList.add('active');
+  document.getElementById('ratioBtn').classList.remove('active');
+  selectedCategory = null;
+  renderMediaLevelChart('volume');
+  renderActiveAccountsChart();
+});
+
+document.getElementById('ratioBtn').addEventListener('click', () => {
+  document.getElementById('ratioBtn').classList.add('active');
+  document.getElementById('volumeBtn').classList.remove('active');
+  selectedCategory = null;
+  renderMediaLevelChart('ratio');
+  renderActiveAccountsChart();
+});
+
+window.addEventListener('resize', () => {
+  mediaLevelChart.resize();
+  activeAccountsChart.resize();
+});
+</script>
+	
+
+	
+<!-- ✅ 扩散渠道与平台分布 -->
+<div id="section-channel" class="section-title mt-4">扩散渠道与平台分布</div>
+
+<!-- 描述区域（移至按钮上方，始终显示） -->
+<div class="desc-box mb-2">截至2025年06月05日 09:00，相关舆情主要分布如下：客户端12609条，占比59.28%；视频2474条，占比11.63%；微博1788条，占比8.41%；网站2371条，占比11.15%；微信1387条，占比6.52%；论坛617条，占比2.9%；报刊24条，占比0.11%。<br><span style="color:#F6AB00">舆情主要集中于客户端。</span></div>
+<!-- 切换按钮 -->
+<div class="trend-btn-group d-flex w-100 mb-3" id="channelTab">
+  <button class="btn flex-fill active" onclick="toggleChannelChart('distribution', this)">扩散渠道</button>
+  <button class="btn flex-fill" onclick="toggleChannelChart('platform', this)">扩散平台</button>
+  <button class="btn flex-fill" onclick="toggleChannelChart('speed', this)">首发速度</button>
+</div>
+
+<!-- 图表容器 -->
+<div id="channelChartContainer">
+  <div id="channelChart" style="height: 300px; width: 100%;"></div>
+  <div id="pingtaiChart" style="height: 300px;width: 100%;display: none;"></div>
+  <div id="channelSpeedChart" style="height: 300px; width: 100%; display: none;"></div>
+</div>
+
+<!-- 切换交互逻辑 -->
+<script>
+function toggleChannelChart(type, btn) {
+  document.querySelectorAll('#channelTab .btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const channelChart = document.getElementById('channelChart');
+  const pingtaiChart = document.getElementById('pingtaiChart');
+  const channelSpeedChart = document.getElementById('channelSpeedChart');
+
+  if (type === 'distribution') {
+    channelChart.style.display = 'block';
+    pingtaiChart.style.display = 'none';
+    channelSpeedChart.style.display = 'none';
+    echarts.getInstanceByDom(channelChart)?.resize();
+  } else if (type === 'platform') {
+    channelChart.style.display = 'none';
+    pingtaiChart.style.display = 'block';
+    channelSpeedChart.style.display = 'none';
+    echarts.getInstanceByDom(pingtaiChart)?.resize();
+  } else if (type === 'speed') {
+    channelChart.style.display = 'none';
+    pingtaiChart.style.display = 'none';
+    channelSpeedChart.style.display = 'block';
+    echarts.getInstanceByDom(channelSpeedChart)?.resize();
+  }
+}
+</script>
+
+<!-- 📊 渠道分布图表配置 -->
+<script>
+const channelChart = echarts.init(document.getElementById('channelChart'));
+
+// ✅ 按发文量降序排序的数据
+const channels = ['客户端', '网站', '论坛', '微信', '视频', '微博', '数字报'];
+const volumes = [80, 25, 30, 95, 3, 15, 15];
+const ratios = [95, 85, 70, 40, 80, 55, 45];
+
+// 创建组合数组并按发文量降序排序
+const combinedData = channels.map((channel, index) => ({
+  channel,
+  volume: volumes[index],
+  ratio: ratios[index]
+})).sort((a, b) => b.volume - a.volume);
+
+// 提取排序后的数据
+const sortedChannels = combinedData.map(item => item.channel);
+const sortedVolumes = combinedData.map(item => item.volume);
+const sortedRatios = combinedData.map(item => item.ratio);
+
+const channelOption = {
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' }
+  },
+  legend: {
+    data: ['发文量', '占比'],
+    textStyle: { color: '#666666', fontSize: 12 }
+  },
+  grid: {
+    left: '2%',
+    right: '3%',
+    bottom: '3%',
+    top: '20%',
+    containLabel: true
+  },
+  xAxis: [{
+    type: 'category',
+    data: sortedChannels, // ✅ 使用排序后的渠道名称
+    axisTick: { alignWithLabel: true },
+    axisLabel: { color: '#666666', fontSize: 12 }
+  }],
+  yAxis: [
+    {
+      type: 'value',
+      name: '(单位:条)',
+      nameTextStyle: { color: '#666666', fontSize: 12, padding: [0, 0, 13, -7] },
+      axisLabel: { color: '#666666', fontSize: 12 }
+    },
+    {
+      type: 'value',
+      min: 0,
+      max: 100,
+      interval: 20,
+      splitLine: { show: false },
+      axisLabel: {
+        formatter: '{value}%',
+        color: '#666666',
+        fontSize: 12
+      }
+    }
+  ],
+  series: [
+    {
+      name: '发文量',
+      type: 'bar',
+      barWidth: '30%',
+      data: sortedVolumes, // ✅ 使用排序后的发文量数据
+      itemStyle: {
+        color: '#f5a623',
+        barBorderRadius: [6, 6, 0, 0]
+      },
+      markPoint: {
+        data: [{ type: 'max', name: '最大值' }],
+        symbol: 'pin',
+        symbolSize: [60, 40],
+        label: {
+          formatter: function (param) {
+            return `${param.value}`;
+          },
+          color: '#fff',
+          fontSize: 12
+        },
+        itemStyle: { color: '#F6AB00' }
+      }
+    },
+    {
+      name: '占比',
+      type: 'line',
+      yAxisIndex: 1,
+      data: sortedRatios, // ✅ 使用排序后的占比数据
+      lineStyle: { color: '#999999' },
+      itemStyle: {
+        color: '#ffffff',
+        borderColor: '#999999',
+        borderWidth: 2
+      },
+      symbol: 'circle',
+      symbolSize: 8,
+      markPoint: {
+        data: [{ type: 'max', name: '最高占比' }],
+        symbol: 'pin',
+        symbolSize: 50,
+        label: {
+          position: 'inside',
+          color: '#fff',
+          fontSize: 12,
+          formatter: '{c}%'
+        },
+        itemStyle: { color: 'rgba(153, 153, 153, 0.9)' }
+      }
+    }
+  ]
+};
+
+channelChart.setOption(channelOption);
+</script>
+	
+<!-- 📊 平台分布图表配置 -->
+<script>
+var chartDom = document.getElementById('pingtaiChart');
+var myChart = echarts.init(chartDom);
+var option;
+
+const data = [
+  { name: '搜狐号', value: 1234 },
+  { name: '新浪微博', value: 1100 },
+  { name: '微信', value: 930 },
+  { name: '百家号', value: 750 },
+  { name: '懂车帝', value: 700 },
+  { name: '网易号', value: 670 },
+  { name: '网易新闻', value: 620 },
+  { name: '小红书', value: 550 },
+  { name: '今日头条', value: 520 },
+  { name: '有驾', value: 500 }
+];
+
+option = {
+  title: {
+    text: ''
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' }
+  },
+  legend: {
+    data: ['发文量'],
+    top: 10
+  },
+  grid: {
+    left: '4%',
+    right: '4%',
+    bottom: '3%',
+    top: '15%',
+    containLabel: true
+  },
+  xAxis: {
+    type: 'category',
+    data: data.map(item => item.name),
+    axisTick: { alignWithLabel: true },
+    axisLabel: { color: '#333' }
+  },
+  yAxis: {
+    type: 'value',
+    name: '(单位:条)',
+    axisLabel: { color: '#333' },
+    splitLine: { lineStyle: { color: '#eee' } }
+  },
+  series: [
+    {
+      name: '发文量',
+      type: 'bar',
+      barWidth: '45%',
+      itemStyle: {
+        color: '#F6AB00',
+        borderRadius: [6, 6, 0, 0]
+      },
+		markPoint: {
+      data: [{ type: 'max', name: '最大值' }],
+      symbol: 'pin',
+      symbolSize: [60, 40],
+      label: { color: '#fff', fontSize: 12, formatter: '{c}' },
+      itemStyle: { color: '#F6AB00' }
+    },
+      
+      data: data.map(item => item.value)
+    }
+  ]
+};
+
+myChart.setOption(option);
+</script>
+
+<!-- 📊 首发速度图表配置 -->
+<script>
+const channelSpeedChart = echarts.init(document.getElementById('channelSpeedChart'));
+
+const channelSpeedData = [
+  { name: '微博', time: '2025-05-17 08:45', account: '新华网', title: '董明珠首谈小米造车：底线在哪？',  },
+  { name: '客户端', time: '2025-05-17 09:00', account: '澎湃新闻APP', title: '小米VS格力争议升级',  },
+  { name: '网站', time: '2025-05-17 09:20', account: '新浪财经', title: '车展热点：董明珠怒怼雷军', },
+  { name: '视频', time: '2025-05-17 09:35', account: '央视新闻', title: '格力与小米的较量',  },
+  { name: '微信', time: '2025-05-17 10:15', account: '经济观察报', title: '车展风波：话语权的较量',  },
+  { name: '论坛', time: '2025-05-17 10:30', account: '虎扑汽车区', title: '格力小米互怼你站谁',  },
+  { name: '报刊', time: '2025-05-17 11:00', account: '新京报', title: '两大企业高管争锋引发争议', }
+];
+
+const baseTime = new Date(channelSpeedData[0].time).getTime();
+const xData = channelSpeedData.map(d => d.name);
+const yData = channelSpeedData.map(d => {
+  const diff = (new Date(d.time).getTime() - baseTime) / (1000 * 60);
+  return {
+    value: diff,
+    label: { formatter: `${d.time}` },
+    itemStyle: { color: '#f5a623', barBorderRadius: [0, 6, 6, 0] },
+  };
+});
+
+channelSpeedChart.setOption({
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' },
+	confine: true, // ✅ 限制 tooltip 在容器内显示
+    formatter: function (params) {
+      const item = params[0];
+      const original = channelSpeedData.find(d => d.name === item.name);
+      return `
+        <b>${item.name}</b><br/>
+        首发时间：${original.time}<br/>
+        首发账号：${original.account}<br/>
+        文章标题：${original.title}<br/>
+        较首发平台：+${item.value} 分钟
+      `;
+    }
+  },
+  grid: {
+    top: '5%',
+    left: '4%',
+    right: '15%',
+    bottom: '5%',
+    containLabel: true
+  },
+  xAxis: {
+    type: 'value',
+    name: '时间差（分钟）',
+    axisLabel: { color: '#666' },
+    nameTextStyle: { color: '#666', fontSize: 12, padding: [0, 0, 0, -30] },
+    splitLine: { lineStyle: { color: '#eee' } }
+  },
+  yAxis: {
+    type: 'category',
+    data: xData,
+    inverse: true,
+    axisLabel: { color: '#666' }
+  },
+  series: [{
+    name: '首发时间',
+    type: 'bar',
+    data: yData,
+    barWidth: 20,
+    label: {
+      show: true,
+      position: 'right',
+      color: '#333'
+    }
+  }]
+});
+</script>
+	
+	
+	
+	
+	
+	
+
+
+  
+ <!-- 高频词统计 -->
+<div id="section-wordcloud" class="section-title mt-4">高频词统计</div>
+<div class="trend-btn-group d-flex w-100 mb-3" id="wordcloudBtns">
+  <button type="button" class="btn flex-fill active" data-cloud="all">全量</button>
+  <button type="button" class="btn flex-fill" data-cloud="pos">正面及中性</button>
+  <button type="button" class="btn flex-fill" data-cloud="neg">负面</button>
+  <button type="button" class="btn flex-fill" data-cloud="heatmap">热力图</button>
+</div>
+<div id="wordcloudChart" style="width:100%; height:400px;"></div>
+<!-- 📊 高频词统计数据图 -->
+<script>
+const wordcloudChart = echarts.init(document.getElementById('wordcloudChart'));
+
+// 生成词云数据
+function generateData(count) {
+  const words = ['智能', '升级', '车型', '芯片', '激光雷达', '全系', '车圈', '说了算', '家', 'NOA', '标配', '性能', '舒适', '高端'];
+  return Array.from({ length: count }, () => ({
+    name: words[Math.floor(Math.random() * words.length)],
+    value: Math.floor(Math.random() * 90 + 10)
+  }));
+}
+
+// 热力图数据
+const keywords = ['上海', '氛围', '书法', '展位', '礼盒', '好玩', '新品', '用户', '微博', '博会'];
+const dates = ['2025-04-01', '2025-04-06', '2025-04-11', '2025-04-15', '2025-04-19', '2025-04-23', '2025-04-27', '2025-04-30'];
+const heatmapData = [];
+for (let i = 0; i < keywords.length; i++) {
+  for (let j = 0; j < dates.length; j++) {
+    const value = (i === 8 && j === 2) ? 800 : Math.floor(Math.random() * 100);
+    heatmapData.push([j, i, value]);
+  }
+}
+
+// 数据集
+const datasets = {
+  'all': {
+    data: generateData(35),
+    color: [78, 89, 140]
+  },
+  'pos': {
+    data: generateData(30),
+    color: [0, 150, 199]
+  },
+  'neg': {
+    data: generateData(25),
+    color: [246, 171, 0]
+  }
+};
+
+const cloudShape = 'path://M50 100 Q60 80 70 100 Q80 60 95 80 Q110 60 120 80 Q130 60 140 80 Q150 100 160 100 Q170 120 150 130 Q130 140 110 130 Q90 140 70 130 Q50 120 50 100';
+
+function renderWordCloud(type) {
+  wordcloudChart.clear();  // ✅ 清空前一图层
+
+  if (type === 'heatmap') {
+    wordcloudChart.setOption({
+      tooltip: {
+        position: 'top',
+        formatter: function (p) {
+          const val = p.value[2];
+          return `${keywords[p.value[1]]} - ${dates[p.value[0]]}<br/>频次：${val}`;
+        }
+      },
+      grid: {
+        top: '14%',
+        left: '2%',
+        right: '3%',
+        bottom: '5%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: dates,
+        axisLabel: { rotate: 45, color: '#666', fontSize: 12 },
+        splitArea: { show: true }
+      },
+      yAxis: {
+        type: 'category',
+        data: keywords,
+        axisLabel: { color: '#666', fontSize: 12 },
+        splitArea: { show: true }
+      },
+      visualMap: {
+        min: 0,
+        max: 1800,
+        calculable: true,
+        orient: 'horizontal',
+        align: 'left',
+        top: '0',
+        right: '5%',
+        inRange: {
+          color: ['#ffeaae', '#ffb627', '#ff9505', '#e2711d']
+        },
+        textStyle: {
+          color: '#666',
+          fontSize: 12
+        }
+      },
+      series: [{
+        name: '热力图',
+        type: 'heatmap',
+        data: heatmapData,
+        label: { show: false },
+        itemStyle: {
+          borderColor: '#ffffff',
+          borderWidth: 1
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 8,
+            shadowColor: 'rgba(0, 0, 0, 0.3)'
+          }
+        }
+      }]
+    });
+  } else {
+    const config = datasets[type];
+    wordcloudChart.setOption({
+		 tooltip: {  // ✅ 添加正确的tooltip配置
+        trigger: 'item',
+        formatter: function(params) {
+          return `${params.name}: ${params.value} 次`;
+        }
+      },
+      series: [{
+        type: 'wordCloud',
+        shape: cloudShape,
+        sizeRange: [12, 50],
+        rotationRange: [0, 0],
+        gridSize: 8,
+        textStyle: {
+          fontFamily: 'sans-serif',
+          color: (params) => {
+            const alpha = 0.3 + 0.7 * (params.value / 100);
+            return `rgba(${config.color.join(',')}, ${alpha})`;
+          }
+        },
+        data: config.data.sort((a, b) => b.value - a.value)
+      }]
+    });
+  }
+}
+
+// 初始渲染词云
+renderWordCloud('all');
+
+// 按钮绑定
+document.querySelectorAll('#wordcloudBtns .btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('#wordcloudBtns .btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const type = this.getAttribute('data-cloud');
+    renderWordCloud(type);
+  });
+});
+
+window.addEventListener('resize', () => wordcloudChart.resize());
+</script>
+	
+	
+
+	
+
+<!-- ✅ 涉事方回应分析 -->
+<div id="section-response" class="section-title mt-4">涉事方回应分析</div>
+<div class="trend-btn-group d-flex w-100 mb-3" id="response2Tab">
+  <button class="btn flex-fill active" onclick="toggleResponse2Chart('ratio', this)">占比统计</button>
+  <button class="btn flex-fill" onclick="toggleResponse2Chart('trend', this)">趋势统计</button>
+</div>
+
+<!-- 多环圆环图 -->
+<div id="responseDonutChart" style="width: 100%; height: 300px;"></div>
+<!-- 折线图 -->
+<div id="responseLineChart" style="width: 100%; height: 300px; display: none;"></div>
+<!-- 📊 涉事方回应分析数据图 -->
+<script>
+const responseEntities = [
+  { name: '华熙生物', total: 1600, response: 720, color: '#F5A623' },
+  { name: '巨子生物', total: 920, response: 92, color: '#FFC60A' },
+  { name: '锦波生物', total: 540, response: 92, color: '#FFEB3B' }
+];
+
+// ✅ 占比统计：多环圆环图
+const responseDonutChart = echarts.init(document.getElementById('responseDonutChart'));
+responseDonutChart.setOption({
+  tooltip: {
+    trigger: 'item',
+    formatter: function (p) {
+      if (!p.name) return '';
+      const entity = responseEntities.find(d => d.name === p.name);
+      const percent = Math.round((entity.response / entity.total) * 100);
+      return `${p.name}<br/>回应：${entity.response} 条<br/>占比：${percent}%`;
+    }
+  },
+  legend: {
+    orient: 'horizontal',
+    top: 'top',
+    selectedMode: false,
+    data: responseEntities.map(item => ({
+      name: `${item.name}（${Math.round(item.response / item.total * 100)}%）`,
+      icon: 'circle',
+      itemStyle: { color: item.color }
+    })),
+    textStyle: {
+      color: '#666',
+      fontSize: 14
+    },
+    itemWidth: 12,
+    itemHeight: 12
+  },
+  series: responseEntities.map((item, index) => ({
+    name: `${item.name}（${Math.round(item.response / item.total * 100)}%）`,
+    type: 'pie',
+    radius: [`${40 + index * 12}%`, `${50 + index * 12}%`],
+    center: ['50%', '50%'],
+    label: { show: false },
+    labelLine: { show: false },
+    itemStyle: { borderColor: '#fff', borderWidth: 2 },
+    data: [
+      { value: item.response, name: item.name, itemStyle: { color: item.color }},
+      { value: item.total - item.response, name: '', itemStyle: { color: '#E1E6EB' }}
+    ]
+  }))
+});
+
+// ✅ 趋势统计：折线图
+const responseLineChart = echarts.init(document.getElementById('responseLineChart'));
+
+const lineData = {
+  time: ['05/01', '05/02', '05/03', '05/04'],
+   全部: [120, 190, 165, 210],
+  华熙生物: [120, 140, 110, 130],
+  巨子生物: [null, 50, 30, 45],
+  锦波生物: [null, null, 25, 35]
+};
+
+responseLineChart.setOption({
+  tooltip: {
+    trigger: 'axis',
+    formatter: function(params) {
+      let result = params[0].axisValue + '<br/>';
+      params.forEach(item => {
+        result += `${item.marker} ${item.seriesName}: ${item.value} 条<br/>`;
+      });
+      return result;
+    }
+  },
+  legend: {
+    top: 'top',
+    data: ['全部','华熙生物', '巨子生物', '锦波生物'],
+    textStyle: { color: '#666' }
+  },
+  grid: {
+    top: '20%',
+    left: '3%',
+    right: '3%',
+    bottom: '5%',
+    containLabel: true
+  },
+  xAxis: {
+    type: 'category',
+    data: lineData.time,
+    axisLine: { lineStyle: { color: '#ccc' } },
+    axisLabel: { color: '#666', fontSize: 12 }
+  },
+  yAxis: {
+    type: 'value',
+    axisLine: { lineStyle: { color: '#ccc' } },
+    axisLabel: { color: '#666', fontSize: 12 },
+    splitLine: { lineStyle: { color: '#eee' } }
+  },
+  series: [
+	  {
+      name: '全部',
+      type: 'line',
+      data: lineData.全部,
+      smooth: true,
+      itemStyle: { color: '#8F959E' },
+      lineStyle: { color: '#8F959E', width: 2 }
+    },
+    {
+      name: '华熙生物',
+      type: 'line',
+      data: lineData.华熙生物,
+      smooth: true,
+      itemStyle: { color: '#F5A623' },
+      lineStyle: { color: '#F5A623', width: 2 }
+    },
+    {
+      name: '巨子生物',
+      type: 'line',
+      data: lineData.巨子生物,
+      smooth: true,
+      itemStyle: { color: '#FFC60A' },
+      lineStyle: { color: '#FFC60A', width: 2 }
+    },
+    {
+      name: '锦波生物',
+      type: 'line',
+      data: lineData.锦波生物,
+      smooth: true,
+      itemStyle: { color: '#FFEB3B' },
+      lineStyle: { color: '#FFEB3B', width: 2 }
+    }
+  ]
+});
+
+// ✅ 切换按钮逻辑
+function toggleResponse2Chart(type, btn) {
+  $('#response2Tab .btn').removeClass('active');
+  $(btn).addClass('active');
+  if (type === 'ratio') {
+    $('#responseDonutChart').show();
+    $('#responseLineChart').hide();
+    responseDonutChart.resize();
+  } else {
+    $('#responseDonutChart').hide();
+    $('#responseLineChart').show();
+    responseLineChart.resize();
+  }
+}
+</script>
+
+  
+  
+ 
+  
+  
+  <!-- ✅ 舆情互动趋势 -->
+  <div id="section-engagement" class="section-title mt-4">舆情互动趋势</div>
+  <div class="trend-btn-group d-flex w-100 mb-3" id="engageTab">
+	   <button class="btn flex-fill active" onclick="updateEngageChart('hour', this)">小时级</button>
+    <button class="btn flex-fill" onclick="updateEngageChart('4hour', this)">4小时级</button>
+    <button class="btn flex-fill" onclick="updateEngageChart('day', this)">日级</button>
+  </div>
+  <div id="engageChart" style="width: 100%; height: 300px;"></div>
+	<!-- 📊 舆情互动趋势 数据图 -->
+  <script>
+const engageChart = echarts.init(document.getElementById('engageChart'));
+
+const engageData = {
+  day: {
+    x: ['2024-11-01', '2024-11-05', '2024-11-10', '2024-11-15', '2024-11-20'],
+    data: {
+      '互动量': [80, 60, 30, 90, 70],
+      '转发量': [100, 80, 50, 60, 120],
+      '评论量': [180, 160, 60, 90, 220],
+      '点赞量': [240, 260, 110, 130, 240]
+    }
+  },
+  hour: {
+    x: Array.from({length: 24}, (_, i) => `${i}:00`),
+    data: {
+      '互动量': Array.from({length: 24}, () => Math.floor(Math.random() * 100)),
+      '转发量': Array.from({length: 24}, () => Math.floor(Math.random() * 100)),
+      '评论量': Array.from({length: 24}, () => Math.floor(Math.random() * 100)),
+      '点赞量': Array.from({length: 24}, () => Math.floor(Math.random() * 100))
+    }
+  },
+  '4hour': {
+    x: ['0:00', '4:00', '8:00', '12:00', '16:00', '20:00'],
+    data: {
+      '互动量': [20, 40, 60, 50, 70, 30],
+      '转发量': [15, 35, 55, 65, 85, 45],
+      '评论量': [45, 55, 75, 85, 95, 65],
+      '点赞量': [80, 90, 110, 100, 120, 95]
+    }
+  }
+};
+
+function renderEngageChart(type) {
+  const { x, data } = engageData[type];
+  const colors = ['#F6AB00', '#E8871E', '#BAD4AA', '#86BBD8'];
+
+  const series = Object.keys(data).map((key, index) => ({
+    name: key,
+    type: 'line',
+    data: data[key],
+    smooth: true,
+    symbol: 'circle',
+    symbolSize: 6,
+    itemStyle: {
+      color: '#ffffff',
+      borderColor: colors[index],
+      borderWidth: 1.5
+    },
+    lineStyle: { color: colors[index], width: 2 },
+    markPoint: {
+      data: [{ type: 'max', name: '最高值' }],
+      symbol: 'pin',
+      symbolSize: [50, 40],
+      label: {
+        color: '#fff',
+        fontSize: 12,
+        formatter: '{c}'
+      },
+      itemStyle: {
+        color: colors[index]
+      }
+    }
+  }));
+
+  engageChart.setOption({
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'line' }
+    },
+    legend: {
+      data: Object.keys(data),
+      top: 'top',
+      textStyle: { color: '#666', fontSize: 12 },
+      selected: {
+        '互动量': true,
+        '转发量': false,
+        '评论量': false,
+        '点赞量': false
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: x,
+      axisLabel: { 
+        color: '#666',
+        fontSize: 12,
+        showMaxLabel: true,
+        showMinLabel: true
+      },
+      axisLine: { lineStyle: { color: '#ccc' } }
+    },
+    yAxis: {
+      type: 'value',
+      name: '单位:条',
+      nameLocation: 'end',
+      nameTextStyle: {
+        color: '#666',
+        fontSize: 12,
+        padding: [0, 0, 8, -25]
+      },
+      axisLabel: { color: '#666', fontSize: 12 },
+      splitLine: { lineStyle: { color: '#eee' } }
+    },
+    grid: {
+      top: '24%',
+      left: '3%',
+      right: '3%',
+      bottom: '0%',
+      containLabel: true
+    },
+    series: series
+  });
+}
+
+function updateEngageChart(type, btn) {
+  $('#engageTab .btn').removeClass('active');
+  $(btn).addClass('active');
+  renderEngageChart(type);
+}
+
+// 初始化
+renderEngageChart('hour');
+</script> 
+  
+  <!-- ✅ 舆情互动分析（新版） -->
+  <div id="section-interaction" class="section-title mt-4">舆情互动分析</div>
+  <div class="trend-btn-group d-flex w-100 mb-3" id="interactionTab">
+    <button class="btn flex-fill active" onclick="updateInteractionChart('forward', this)">转发率</button>
+    <button class="btn flex-fill" onclick="updateInteractionChart('engage', this)">互动率</button>
+  </div>
+  <div id="interactionChart" style="width: 100%; height: 300px;"></div>
+	<!-- 📊 舆情互动分析 数据图 -->
+  <script>
+const interactionChart = echarts.init(document.getElementById('interactionChart'));
+
+const timeLabels = ['2025/04/30 09:00', '2025/04/30 10:00', '2025/04/30 11:00', '2025/04/30 12:00', '2025/04/30 13:00', '2025/04/30 14:00', '2025/04/30 15:00', '2025/04/30 16:00', '2025/04/30 17:00', '2025/04/30 18:00'];
+const forwardRate = [30, 37, 43, 29, 32, 30, 17, 23, 19, 52];
+const engageRate = [50, 60, 72, 55, 55, 40, 30, 12, 45, 65];
+
+function renderInteractionChart(type) {
+  const data = type === 'forward' ? forwardRate : engageRate;
+  const color = type === 'forward' ? '#f5a623' : '#999999';
+
+  interactionChart.setOption({
+    tooltip: {
+      trigger: 'axis',
+      formatter: function (params) {
+        let p = params[0];
+        return `${p.axisValue}<br/>${p.marker} ${p.seriesName}: ${p.data.toFixed(2)}%`;
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: timeLabels,
+      axisLine: { lineStyle: { color: '#ccc' }},
+      axisLabel: { color: '#666', fontSize: 12 }
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {
+        color: '#666',
+        fontSize: 12,
+        formatter: function (val) {
+          return val.toFixed(2) + '%';
+        }
+      },
+      splitLine: { lineStyle: { color: '#eee' }}
+    },
+    grid: {
+      top: '7%',
+      left: '3%',
+      right: '3%',
+      bottom: '3%',
+      containLabel: true
+    },
+    series: [{
+      name: type === 'forward' ? '转发率' : '互动率',
+      type: 'line',
+      data: data,
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 6,
+      lineStyle: {
+        color: color,
+        width: 2
+      },
+      itemStyle: {
+        color: '#ffffff',
+        borderColor: color,
+        borderWidth: 2
+      },
+      markPoint: {
+        data: [{ type: 'max', name: '最大值' }],
+        symbol: 'rect',
+        symbolSize: [60, 24],
+        symbolOffset: [0, -18],
+        label: {
+          formatter: function (param) {
+            return param.value.toFixed(2) + '%';
+          },
+          color: '#fff',
+          fontSize: 12
+        },
+        itemStyle: {
+          color: color
+        }
+      }
+    }]
+  });
+}
+
+function updateInteractionChart(type, btn) {
+  $('#interactionTab .btn').removeClass('active');
+  $(btn).addClass('active');
+  renderInteractionChart(type);
+}
+
+// 初始化显示“转发率”
+renderInteractionChart('forward');
+</script> 
+  
+ 
+
+<!-- ============ 历史舆情回顾 ============ -->
+
+<!-- ⬇ HTML：放到合适位置（建议在“舆情互动分析”之后） -->
+<div id="section-history" class="section-title mt-4">历史舆情回顾</div>
+
+<div id="historyTab" class="history-btn-group d-flex w-100 mb-2">
+  <button class="btn flex-fill active"  data-target="#historyBrand">品牌相关</button>
+  <button class="btn flex-fill"          data-target="#historyCause">同类诱因</button>
+  <button class="btn flex-fill"          data-target="#historyIndustry">同行业</button>
+</div>
+
+<div id="historyTabContent" class="tab-content">
+  <!-- 品牌相关 -->
+  <div class="tab-pane fade show active" id="historyBrand">
+    <div class="history-list">
+      <!-- ★ 卡片 1 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">企业名称</div> <div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+       
+      </div>
+
+      <!-- ★ 卡片 2 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">企业名称</div> <div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+       
+      </div>
+
+      <!-- 卡片 3 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">企业名称</div> <div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+       
+      </div>
+
+      <!-- 卡片 4 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">企业名称</div> <div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+       
+      </div>
+
+      <!-- 卡片 5 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">企业名称</div> <div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+       
+      </div>
+
+
+    </div>
+  </div>
+
+  <!-- 同类诱因 -->
+  <div class="tab-pane fade" id="historyCause">
+    <div class="history-list">
+   
+      <!-- ★ 卡片 1 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">食品安全</div><div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      <!-- ★ 卡片 2 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">食品安全</div><div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      <!-- 卡片 3 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">食品安全</div><div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      <!-- 卡片 4 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">食品安全</div><div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      <!-- 卡片 5 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">食品安全</div><div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 同行业 -->
+  <div class="tab-pane fade" id="historyIndustry">
+    <div class="history-list">
+   
+      <!-- ★ 卡片 1 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">食品行业</div><div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      <!-- ★ 卡片 2 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">食品行业</div><div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      <!-- 卡片 3 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">食品行业</div><div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      <!-- 卡片 4 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">食品行业</div><div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      <!-- 卡片 5 -->
+      <div class="history-card">
+        <div class="d-flex">
+          <!-- 序号 -->
+          <div class="history-index">1</div>
+
+          <!-- 右侧主内容 -->
+          <div class="flex-grow-1">
+            <!-- 标题 + 指数同行 -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="history-title">
+                广州深圳市场近期有白酒大幅降价，行业量价博弈困境仍难破除
+              </div>
+
+              <!-- 指数块：两行，右对齐 -->
+              <div class="history-right">
+                <span class="tag d-block">MJSI</span>
+                <span class="score d-block">86.5</span>
+              </div>
+            </div>
+
+            <!-- 子类别行 -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="history-sub">食品行业</div><div class="history-time">2025-04-25 00:50:54</div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ⬇ 交互脚本：放到现有 <script>…</script> 区域底部即可 -->
+<script>
+$(function () {
+  $('#historyTab .btn').click(function () {
+    // 切换按钮激活态
+    $('#historyTab .btn').removeClass('active');
+    $(this).addClass('active');
+    // 切换内容
+    $('#historyTabContent .tab-pane').removeClass('show active');
+    $($(this).data('target')).addClass('show active');
+  });
+});
+</script>
+<!-- ============ /历史舆情回顾 ============ -->	
+	
+  
+  
+  <!-- ✅ 数据周期 --> 
+  <!--  <div class="date-range-2">数据周期：2025.05.01 08:00 -- 2025.05.08 08:00</div>--> 
+ 
+<div class="d-flex justify-content-between mt-4">
+  <!-- 新增“生成监测专报”按钮 -->
+  <button id="generateReportBtn" class="download-btn mr-2" style="width:48%;">生成监测专报</button>
+  <!-- 原有“下载舆情数据”按钮 -->
+  <button class="download-btn" style="width:48%;">下载舆情数据</button>
+</div>
+
+<!-- 弹出框 -->
+<div id="reportModal" class="modal" tabindex="-1" role="dialog" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1050;">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:600px; margin:auto;">
+    <div class="modal-content" style="padding:20px; border-radius:10px;">
+      <h5 class="modal-title mb-3">监测专报内容</h5>
+      <textarea id="reportText" class="form-control" rows="15" readonly style="font-size:14px; resize:none;">
+截至2025年06月13日02时，全网共监测到46408条相关信息，本时段新增***条。舆情扩散速度为52条/小时，1211条/日。舆情热度指数为**。
+来自“舆情声量趋势”“舆情增速趋势”和“舆情数据”
+
+相关舆情主要分布如下：客户端9874条，占比57.36%；微信4153条，占比24.13%；视频1095条，占比6.36%；微博1039条，占比6.04%；网站659条，占比3.83%；论坛387条，占比2.25%；报刊6条，占比0.03%。
+舆情主要集中于客户端。
+来自“扩散渠道分布”
+
+隆汇、大智慧、微信 - 克而瑞物管等，详情如下：
+1.新京报
+深圳高层建筑起火有哪些救援难点？消防专家解读
+https://www.bjnews.com.cn/detail/1733928160168803.html
+2.新京报
+警方介入调查深圳悦府住宅火灾：已询问物业人员
+https://www.bjnews.com.cn/detail/1733928634168805.html
+3.新京报
+深圳住宅爆炸起火致1人死亡，消防：现场搜救已结束
+https://www.bjnews.com.cn/detail/1733923860168794.html
+....（最多10条）
+来自“新增主要信息”
+
+舆论观点：
+1.新闻媒体：受《情况通报》的引导，绝大多数舆论认为是意外，对伤者表示同情
+2.意见领袖：部分网民认为主办方没有关注灾害天气预警，是人祸
+3.网民：个别网民认为舞台搭建质量存在安全风险
+来自“.舆论观点（AI生成）”
+      </textarea>
+      <div class="text-right mt-3">
+        <button class="btn btn-secondary mr-2" onclick="closeReportModal()">关闭</button>
+        <button class="btn btn-primary" onclick="copyReport()">复制文本</button>
+      </div>
+    </div>
+  </div>
+</div>	
+	
+	
+	
+	
+	
+	
+</div>
+
+<!-- 返回顶部 -->
+<button id="backToTop" class="back-to-top" aria-label="返回顶部"> <i class="fas fa-arrow-up"></i> </button>
+
+
+	
+<!-- 🔶🔶🔶🔶🔶🔶🔶🔶🔶🔶🔶🔶🔶功能代码 ----------------------------------------------------------------------------------------> 		
+
+	
+<!-- 🔶 页面导航 --> 
+<script>
+// 页面导航逻辑
+$(document).ready(function() {
+  const $navScroller = $('.nav-scroller');
+  const scrollOffset = 120;
+
+  // 滚动时激活对应模块
+  function activateCurrentSection() {
+    const currentPos = $(window).scrollTop() + 80; // 增加触发阈值
+    $('div[id^="section-"]').each(function() {
+      const sectionTop = $(this).offset().top;
+      const sectionBottom = sectionTop + $(this).outerHeight();
+      
+      // 增加触发范围判断精度
+      if (currentPos >= sectionTop - 20 && currentPos <= sectionBottom + 20) {
+        const id = '#' + $(this).attr('id');
+        $('.nav-link').removeClass('active');
+        $(`.nav-link[href="${id}"]`).addClass('active');
+        return false; // 找到匹配后退出循环
+      }
+    });
+  }
+
+  // 初始化滚动监听
+  $(window).scroll(function() {
+    $navScroller.toggleClass('active', $(this).scrollTop() > scrollOffset);
+    activateCurrentSection();
+  });
+
+  // 点击导航时处理
+  $('.nav-link').click(function(e) {
+    e.preventDefault();
+    const target = $(this).attr('href');
+    $('html, body').animate({
+      scrollTop: $(target).offset().top - 80
+    }, 500);
+    
+    // 手动添加激活状态
+    $('.nav-link').removeClass('active');
+    $(this).addClass('active');
+  });
+
+  // 初始化激活状态
+  activateCurrentSection();
+});
+</script> 	
+	
+	
+<!-- 🔶 高热信息列表左右点击箭头滚动 --> 	
+	<script>
+window.addEventListener('load', function () {
+  const hotList = document.getElementById('hotInfoList');
+  const leftArrow = document.querySelector('.hot-arrow-left');
+  const rightArrow = document.querySelector('.hot-arrow-right');
+
+  if (hotList && leftArrow && rightArrow) {
+    leftArrow.addEventListener('click', function () {
+      hotList.scrollBy({ left: -240, behavior: 'smooth' });
+    });
+    rightArrow.addEventListener('click', function () {
+      hotList.scrollBy({ left: 240, behavior: 'smooth' });
+    });
+  }
+});
+</script>	
+	
+	
+
+<!-- 🔶 时间轴 --> 	
+<script>
+$(document).ready(function(){
+  let initialCount = 3;
+  let $items = $('.timeline-item');
+  $items.slice(initialCount).hide();
+  if ($items.length > initialCount) {
+    $('.timeline-container').append(`
+      <div class="text-center mt-3 mb-3">
+        <button id="toggleTimeline" class="btn category-expand-btn">展开全部 <i class="fas fa-angle-down ml-2"></i></button>
+      </div>
+    `);
+    $('#toggleTimeline').on('click', function(){
+      if ($(this).text().includes('展开')) {
+        $items.show();
+        $(this).html('收起 <i class="fas fa-angle-up ml-2"></i>');
+      } else {
+        $items.slice(initialCount).hide();
+        $(this).html('展开全部 <i class="fas fa-angle-down ml-2"></i>');
+        $('html, body').animate({
+          scrollTop: $("#section-timeline").offset().top - 100
+        }, 300);
+      }
+    });
+  }
+});
+</script>	
+	
+
+
+<!-- 🔶 舆论观点折叠脚本 --> 
+<script>
+$(document).ready(function(){
+  // 初始化折叠组件（移除默认展开状态的设置）
+  $('[data-toggle="collapse"]').on('click', function() {
+    const $icon = $(this).find('i');
+    $icon.toggleClass('fa-rotate-180');
+    
+    // 关闭其他展开的面板
+    if(!$(this).hasClass('keep-open')) {
+      $('.collapse').not($(this).data('target')).collapse('hide');
+      $('[data-toggle="collapse"]').not(this).find('i').removeClass('fa-rotate-180');
+    }
+  });
+
+});
+</script> 
+
+<!-- 🔶 舆论观点组展开/收起 --> 
+<script>
+// 主分类展开控制
+function toggleMainCategories(btn) {
+  const $list = $(btn).closest('.text-center').prev('.main-category-list'); // ✅ 修复选择器
+  const isExpanded = $list.hasClass('expanded');
+  
+  $list.toggleClass('expanded', !isExpanded);
+  $(btn).html(
+    isExpanded 
+      ? '展开全部 <i class="fas fa-angle-down ml-2"></i>'
+      : '收起 <i class="fas fa-angle-up ml-2"></i>'
+  );
+}
+
+// 初始化时隐藏多余卡片
+$(document).ready(function() {
+  $('.main-category-list').each(function() {
+    const $btn = $(this).next('.text-center');
+    $btn.toggle(
+      $(this).find('.main-category-card').length > 3
+    );
+  });
+});
+
+// 标签页切换时重置状态
+$('#opinionTab .nav-link').click(function() {
+  $('.main-category-list').removeClass('expanded');
+  $('.category-expand-btn').html('展开全部 <i class="fas fa-angle-down ml-2"></i>');
+  $('.collapse').collapse('hide'); // ✅ 关闭所有展开的面板
+});
+</script> 
+
+<!-- 🔶 用于舆论观点切换 --> 
+<script>
+  $(document).ready(function () {
+    $('#opinionTab .btn').click(function () {
+      $('#opinionTab .btn').removeClass('active');
+      $(this).addClass('active');
+      $('#opinionTab').next('.tab-content').find('.tab-pane').removeClass('show active');
+      $($(this).data('target')).addClass('show active');
+    });
+  });
+</script> 
+
+<!-- 🔶 用于高热信息列表切换 --> 
+<script>
+  $(document).ready(function () {
+    $('#heatTab .btn').click(function () {
+      $('#heatTab .btn').removeClass('active');
+      $(this).addClass('active');
+      $('#heatTabContent .tab-pane').removeClass('show active');
+      $($(this).data('target')).addClass('show active');
+    });
+  });
+</script> 
+
+<!-- 🔶 返回顶部 --> 
+<script>
+// 返回顶部逻辑
+document.addEventListener('DOMContentLoaded', function() {
+  const backToTop = document.getElementById('backToTop');
+  
+  // 显示/隐藏控制
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      backToTop.classList.add('show');
+    } else {
+      backToTop.classList.remove('show');
+    }
+  });
+
+  // 点击事件
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+});
+</script> 
+	
+	
+	<script>
+  // 显示弹出框
+  document.getElementById('generateReportBtn').onclick = function () {
+    document.getElementById('reportModal').style.display = 'block';
+  };
+
+  // 关闭弹出框
+  function closeReportModal() {
+    document.getElementById('reportModal').style.display = 'none';
+  }
+
+  // 复制文本内容
+  function copyReport() {
+    const textArea = document.getElementById('reportText');
+    textArea.select();
+    textArea.setSelectionRange(0, 99999); // For mobile
+    document.execCommand("copy");
+    alert("文本已复制到剪贴板！");
+  }
+</script>
+	
+
+	
+
+<script src="https://www.miaojian.com/Scripts/popper.min_zxbg.js"></script> 
+<script src="https://www.miaojian.com/Scripts/bootstrap.min_zxbg.js"></script>
+</body>
+</html>
